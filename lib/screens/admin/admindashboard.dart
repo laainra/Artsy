@@ -18,23 +18,25 @@ class AdminDashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Center(
-          child: Text(
-            "Admin Dashboard",
-            style: TextStyle(color: Colors.black),
-          ),
+        title: Text(
+          "Admin Dashboard",
+          style: TextStyle(color: Colors.black),
         ),
-        centerTitle: true,
       ),
       body: ListView.separated(
         itemBuilder: (context, index) {
-          return TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, form[index][1]); // Fix here
-            },
-            child: Text(form[index][0], style: TextStyle(fontSize: 20)),
-            
-          );
+          return GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, form[index][1]); // Fix here
+              },
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Text(form[index][0],
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
+                    )),
+              ));
         },
         itemCount: form.length,
         separatorBuilder: (context, index) {

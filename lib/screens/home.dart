@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/components/home/new_works_section.dart';
+import 'package:artsy_prj/components/home/explore_section.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class HomePage extends StatelessWidget {
             icon: Icon(
               weight: 100,
               Icons.notifications_outlined,
-              size: 30,
+              size: 20,
               color: Colors.black,
             ),
             onPressed: () {
@@ -31,9 +32,9 @@ class HomePage extends StatelessWidget {
       body: Padding(
           padding: EdgeInsets.all(10),
           child: ListView.builder(
-            itemCount: 1,
+            itemCount: 2,
             itemBuilder: (context, index) {
-              return NewWorksSection();
+              return [NewWorksSection(), ExploreSection()][index];
             },
           )),
     );

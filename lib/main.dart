@@ -23,12 +23,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Artsy',
-            theme: ThemeData(
+      theme: ThemeData(
+        colorScheme: ColorScheme.light(primary: Colors.black),
         fontFamily: 'assets/fonts/nunito.ttf',
-
         textTheme: TextTheme(
           bodyMedium: TextStyle(fontSize: 16.0),
-
         ),
       ),
       initialRoute: '/',

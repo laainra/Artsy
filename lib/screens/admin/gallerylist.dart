@@ -172,7 +172,22 @@ class _GalleryListPageState extends State<GalleryListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Gallery List"),
+                leading: TextButton(
+          child: Text(
+            "<",
+            style: TextStyle(
+              fontSize: 30,
+              color: Colors.black,
+              fontWeight: FontWeight.w100,
+            ),
+          ),
+          onPressed: () {
+            // Fungsi untuk kembali ke halaman sebelumnya
+            Navigator.pop(context);
+          },
+        ),
+              backgroundColor: Colors.white,
+        title: Text("Gallery List",style: TextStyle(color: Colors.black)),
       ),
       body: ListView.builder(
         itemCount: galleries.length,
@@ -213,10 +228,14 @@ class _GalleryListPageState extends State<GalleryListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
         onPressed: () {
           galleryForm(null);
         },
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

@@ -188,51 +188,78 @@ class _ArtistListState extends State<ArtistList> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Artist List"),
+        leading: TextButton(
+          child: Text(
+            "<",
+            style: TextStyle(
+              fontSize: 30,
+              color: Colors.black,
+              fontWeight: FontWeight.w100,
+            ),
+          ),
+          onPressed: () {
+            // Fungsi untuk kembali ke halaman sebelumnya
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.white,
+        title: Text(
+          "Artist List",
+          style: TextStyle(color: Colors.black),
+        ),
       ),
       body: ListView.builder(
         itemCount: artist.length,
         itemBuilder: (context, index) {
           final currentArtist = artist[index];
-          return Container(
-            child: ListTile(
-              leading: currentArtist["photo"] != null
-                  ? Image.file(
-                      File(currentArtist["photo"] ?? ''),
-                    )
-                  : FlutterLogo(),
-              title: Text(currentArtist["name"] ?? ''),
-              subtitle: Text('b. ${currentArtist["birthYear"]}' ?? ''),
-              trailing: SizedBox(
-                width: 100,
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Form(currentArtist["id"]);
-                      },
-                      icon: const Icon(Icons.edit),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        dbHelper.deleteArtist(currentArtist["id"] ?? 0);
-                        refreshData();
-                        showSnackBar("Delete successful");
-                      },
-                      icon: const Icon(Icons.delete),
-                    ),
-                  ],
-                ),
+          final imagePath = currentArtist["photo"] ?? '';
+          final imageFile = File(imagePath);
+
+          return ListTile(
+            leading: imageFile.existsSync() // Check if the file exists
+                ? Image.file(
+                    imageFile,
+                    width: 50, // Set the desired width
+                    height: 50, // Set the desired height
+                    fit: BoxFit.cover,
+                  )
+                : FlutterLogo(
+                    size: 50), // Replace with your default image or widget
+            title: Text(currentArtist["name"] ?? ''),
+            subtitle: Text('b. ${currentArtist["birthYear"]}' ?? ''),
+            trailing: SizedBox(
+              width: 100,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Form(currentArtist["id"]);
+                    },
+                    icon: const Icon(Icons.edit),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      dbHelper.deleteArtist(currentArtist["id"] ?? 0);
+                      refreshData();
+                      showSnackBar("Delete successful");
+                    },
+                    icon: const Icon(Icons.delete),
+                  ),
+                ],
               ),
             ),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
         onPressed: () {
           Form(null);
         },
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

@@ -478,6 +478,7 @@ class _NamePageState extends State<NamePage> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (!isNameEmpty && consentToTerms) {
+                      widget.user.name = nameController.text;
                       if (widget.user.email == 'admin@artsy.com' &&
                           widget.user.password == 'Adminartsy123') {
                         dbHelper.insertUser(widget.user);

@@ -25,126 +25,144 @@ class DBHelper {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await initDB();
-    return _database!;
+    try {
+      _database = await initDB();
+      return _database!;
+    } catch (e) {
+      print('Database initialization error: $e');
+      rethrow;
+    }
   }
 
   Future<Database> initDB() async {
-    String path = join(await getDatabasesPath(), 'artsyprj.db');
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    try {
+      String path = join(await getDatabasesPath(), 'artsydb3');
+      return await openDatabase(path, version: 1, onCreate: _createDB);
+    } catch (e) {
+      print('Database opening error: $e');
+      rethrow;
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE $userTable (
-        id INTEGER PRIMARY KEY,
-        email TEXT,
-        password TEXT,
-        profileImage TEXT,
-        name TEXT,
-        location TEXT,
-        profession TEXT,
-        positions TEXT,
-        about TEXT,
-        createdAt TEXT
-      )
-    ''');
+    try {
+      await db.execute('''
+        CREATE TABLE $userTable (
+          id INTEGER PRIMARY KEY,
+          email TEXT,
+          password TEXT,
+          profileImage TEXT,
+          name TEXT,
+          location TEXT,
+          profession TEXT,
+          positions TEXT,
+          about TEXT,
+          createdAt TEXT
+        )
+      ''');
 
-    await db.execute('''
-      CREATE TABLE $artistTable (
-        id INTEGER PRIMARY KEY,
-        name TEXT,
-        nationality TEXT,
-        birthYear INTEGER,
-        deathYear INTEGER,
-        photo TEXT
-      )
-    ''');
+      await db.execute('''
+        CREATE TABLE $artistTable (
+          id INTEGER PRIMARY KEY,
+          name TEXT,
+          nationality TEXT,
+          birthYear TEXT,
+          deathYear TEXT,
+          photo TEXT
+        )
+      ''');
 
-        await db.execute('''
-      CREATE TABLE $galleryTable (
-        id INTEGER PRIMARY KEY,
-        name TEXT,
-        location TEXT,
-        description TEXT
-      )
-    ''');
+      await db.execute('''
+        CREATE TABLE $galleryTable (
+          id INTEGER PRIMARY KEY,
+          name TEXT,
+          location TEXT,
+          description TEXT,
+          photo TEXT
+        )
+      ''');
 
-    await db.execute('''
-      CREATE TABLE $artworkTable (
-        id INTEGER PRIMARY KEY,
-        title TEXT,
-        medium TEXT,
-        year INTEGER,
-        materials TEXT,
-        rarity TEXT,
-        height REAL,
-        width REAL,
-        depth REAL,
-        price REAL,
-        provenance TEXT,
-        location TEXT,
-        notes TEXT,
-        photos TEXT,
-        condition TEXT,
-        frame TEXT,
-        certificate TEXT,
-        artistId INTEGER,
-        galleryId INTEGER,
-        FOREIGN KEY (artistId) REFERENCES $artistTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-        FOREIGN KEY (galleryId) REFERENCES $galleryTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
-    ''');
+      await db.execute('''
+        CREATE TABLE $artworkTable (
+          id INTEGER PRIMARY KEY,
+          title TEXT,
+          medium TEXT,
+          year TEXT,
+          materials TEXT,
+          rarity TEXT,
+          height REAL,
+          width REAL,
+          depth REAL,
+          price TEXT,
+          provenance TEXT,
+          location TEXT,
+          notes TEXT,
+          photos TEXT,
+          condition TEXT,
+          frame TEXT,
+          certificate TEXT,
+          artistId TEXT,
+          galleryId TEXT
+        )
+      ''');
 
-    await db.execute('''
-      CREATE TABLE $showTable (
-        id INTEGER PRIMARY KEY,
-        name TEXT,
-        start_date TEXT,
-        end_date TEXT,
-        gallery_id INTEGER
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE $artworkShowTable (
-        id INTEGER PRIMARY KEY,
-        artworkId INTEGER,
-        showId INTEGER,
-        FOREIGN KEY (artworkId) REFERENCES $artworkTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-        FOREIGN KEY (showId) REFERENCES $showTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE $auctionTable (
-        id INTEGER PRIMARY KEY,
-        artworkId INTEGER,
-        presenter TEXT,
-        description TEXT,
-        start_datetime TEXT,
-        end_datetime TEXT,
-        FOREIGN KEY (artworkId) REFERENCES $artworkTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE $resultAuctionTable (
-        id INTEGER PRIMARY KEY,
-        auctionId INTEGER,
-        userId INTEGER,
-        amount REAL,
-        ON DELETE NO ACTION ON UPDATE NO ACTIONGN KEY (auctionId) REFERENCES $auctionTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-        FOREIGN KEY (userId) REFERENCES $userTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE $editorialTable (
-        id INTEGER PRIMARY KEY,
-        title TEXT,
-        created_at TEXT,
-        author TEXT,
-        content TEXT,
-        image TEXT
-      )
-    ''');
+      await db.execute('''
+        CREATE TABLE $showTable (
+          id INTEGER PRIMARY KEY,
+          name TEXT,
+          start_date TEXT,
+          end_date TEXT,
+          gallery TEXT
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE $artworkShowTable (
+          id INTEGER PRIMARY KEY,
+          artworkId INTEGER,
+          showId INTEGER,
+          FOREIGN KEY (artworkId) REFERENCES $artworkTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+          FOREIGN KEY (showId) REFERENCES $showTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE $auctionTable (
+          id INTEGER PRIMARY KEY,
+          artworkId INTEGER,
+          presenter TEXT,
+          description TEXT,
+          start_datetime TEXT,
+          end_datetime TEXT,
+          FOREIGN KEY (artworkId) REFERENCES $artworkTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE $resultAuctionTable (
+          id INTEGER PRIMARY KEY,
+          auctionId INTEGER,
+          userId INTEGER,
+          amount REAL,
+          FOREIGN KEY (auctionId) REFERENCES $auctionTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+          FOREIGN KEY (userId) REFERENCES $userTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE $editorialTable (
+          id INTEGER PRIMARY KEY,
+          title TEXT,
+          created_at TEXT,
+          author TEXT,
+          content TEXT,
+          image TEXT
+        )
+      ''');
+    } catch (e) {
+      print('Table creation error: $e');
+      rethrow;
+    }
   }
 
 // Insert a user into the database
@@ -212,8 +230,7 @@ class DBHelper {
     }
   }
 
-
-   // Insert an artist into the database
+  // Insert an artist into the database
   Future<void> insertArtist(ArtistModel artist) async {
     try {
       final db = await database;
@@ -273,6 +290,7 @@ class DBHelper {
       print('Error deleting artist: $e');
     }
   }
+
   // Insert an artwork into the database
   Future<void> insertArtwork(ArtworkModel artwork) async {
     try {
@@ -503,7 +521,7 @@ class DBHelper {
   //   await db.delete(artworkShowTable, where: 'id = ?', whereArgs: [id]);
   // }
 
- // Insert an auction into the database
+  // Insert an auction into the database
   Future<void> insertAuction(AuctionModel auction) async {
     try {
       final db = await database;

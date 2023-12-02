@@ -8,7 +8,7 @@ class ArtworkModel {
   double? height;
   double? width;
   double? depth;
-  double? price;
+  String? price;
   String? provenance;
   String? location;
   String? notes;

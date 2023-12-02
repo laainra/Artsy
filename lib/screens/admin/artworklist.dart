@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:artsy_prj/dbhelper.dart';
 import 'package:artsy_prj/model/artworkmodel.dart';
+import 'package:artsy_prj/model/artistmodel.dart';
+import 'package:artsy_prj/model/gallerymodel.dart';
 
 class ArtworkListPage extends StatefulWidget {
   const ArtworkListPage({Key? key}) : super(key: key);
@@ -28,11 +30,11 @@ class _ArtworkListState extends State<ArtworkListPage> {
   TextEditingController depthController = TextEditingController();
   TextEditingController priceController = TextEditingController();
 
-  String? selectedGallery;
-  String? selectedArtist;
+  int? selectedGallery;
+  int? selectedArtist;
   String? selectedRarity;
   String? selectedMedium;
-  String? photo;
+  String? photos;
 
   List<String> galleries = ['Gallery A', 'Gallery B', 'Gallery C'];
   List<String> artists = ['Artist A', 'Artist B', 'Artist C'];
@@ -66,6 +68,8 @@ class _ArtworkListState extends State<ArtworkListPage> {
   ];
 
   List<Map<String, dynamic>> artwork = [];
+  List<Map<String, dynamic>> artistsData = [];
+  List<Map<String, dynamic>> galleriesData = [];
 
   void refreshData() async {
     final data = await dbHelper.getAllArtworks();
@@ -81,7 +85,37 @@ class _ArtworkListState extends State<ArtworkListPage> {
   @override
   void initState() {
     refreshData();
+    _getAllArtists().then((value) {
+      setState(() {
+        artistsData = value;
+      });
+    });
+    _getAllGalleries().then((value) {
+      setState(() {
+        galleriesData = value;
+      });
+    });
     super.initState();
+  }
+
+  Future<List<Map<String, dynamic>>> _getAllArtists() async {
+    try {
+      final db = await dbHelper.database;
+      return db.query(DBHelper.artistTable);
+    } catch (e) {
+      print('Error retrieving all artists: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _getAllGalleries() async {
+    try {
+      final db = await dbHelper.database;
+      return db.query(DBHelper.galleryTable);
+    } catch (e) {
+      print('Error retrieving all galleries: $e');
+      return [];
+    }
   }
 
   Future<String> getFilePicker() async {
@@ -97,7 +131,7 @@ class _ArtworkListState extends State<ArtworkListPage> {
           File('${destination!.path}/${sourceFile.name.hashCode}');
       final newFile = File(sourceFile.path!).copy(destinationFile!.path);
       setState(() {
-        photo = destinationFile.path;
+        photos = destinationFile.path;
       });
       File(sourceFile.path!).delete();
       return destinationFile.path;
@@ -134,14 +168,14 @@ class _ArtworkListState extends State<ArtworkListPage> {
       selectedArtist = null;
       selectedRarity = null;
       selectedMedium = null;
-      photo = null;
+      photos = null;
     });
   }
 
   void Form(id) async {
     if (id != null) {
       final dataupdate = artwork.firstWhere((element) => element["id"] == id);
-      titleController.text = dataupdate["name"];
+      titleController.text = dataupdate["title"];
       materialsController.text = dataupdate["materials"];
       provenanceController.text = dataupdate["provenance"];
       locationController.text = dataupdate["location"];
@@ -227,26 +261,8 @@ class _ArtworkListState extends State<ArtworkListPage> {
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(hintText: "Price"),
                 ),
-                // Gallery Dropdown
-                DropdownButtonFormField<String>(
-                  value: selectedGallery,
-                  hint: Text('Select Gallery'),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedGallery = value;
-                    });
-                  },
-                  items: galleries.map((gallery) {
-                    return DropdownMenuItem<String>(
-                      value: gallery,
-                      child: Text(gallery),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 16.0),
-
                 // Artist Dropdown
-                DropdownButtonFormField<String>(
+                DropdownButtonFormField<int>(
                   value: selectedArtist,
                   hint: Text('Select Artist'),
                   onChanged: (value) {
@@ -254,10 +270,28 @@ class _ArtworkListState extends State<ArtworkListPage> {
                       selectedArtist = value;
                     });
                   },
-                  items: artists.map((artist) {
-                    return DropdownMenuItem<String>(
-                      value: artist,
-                      child: Text(artist),
+                  items: artistsData.map((artist) {
+                    return DropdownMenuItem<int>(
+                      value: artist['id'],
+                      child: Text(artist['name']),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 16.0),
+
+                // Gallery Dropdown
+                DropdownButtonFormField<int>(
+                  value: selectedGallery,
+                  hint: Text('Select Gallery'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedGallery = value;
+                    });
+                  },
+                  items: galleriesData.map((gallery) {
+                    return DropdownMenuItem<int>(
+                      value: gallery['id'],
+                      child: Text(gallery['name']),
                     );
                   }).toList(),
                 ),
@@ -313,7 +347,7 @@ class _ArtworkListState extends State<ArtworkListPage> {
                 ElevatedButton(
                   onPressed: () async {
                     if (id != null) {
-                      String? photoartwork = photo;
+                      String? photoartwork = photos;
                       final data = ArtworkModel(
                         id: id,
                         title: titleController.text,
@@ -328,9 +362,9 @@ class _ArtworkListState extends State<ArtworkListPage> {
                         height: double.parse(heightController.text),
                         width: double.parse(widthController.text),
                         depth: double.parse(depthController.text),
-                        price: double.parse(priceController.text),
-                        galleryId: galleries.indexOf(selectedGallery!),
-                        artistId: artists.indexOf(selectedArtist!),
+                        price: priceController.text,
+                        galleryId: selectedGallery,
+                        artistId: selectedArtist,
                         rarity: selectedRarity!,
                         medium: selectedMedium!,
                         photos: photoartwork.toString(),
@@ -342,7 +376,7 @@ class _ArtworkListState extends State<ArtworkListPage> {
                       refreshData();
                       showSnackBar("Update successful");
                     } else {
-                      String? photoartwork = photo;
+                      String? photoartwork = photos;
                       final data = ArtworkModel(
                         title: titleController.text,
                         materials: materialsController.text,
@@ -356,9 +390,9 @@ class _ArtworkListState extends State<ArtworkListPage> {
                         height: double.parse(heightController.text),
                         width: double.parse(widthController.text),
                         depth: double.parse(depthController.text),
-                        price: double.parse(priceController.text),
-                        galleryId: galleries.indexOf(selectedGallery!),
-                        artistId: artists.indexOf(selectedArtist!),
+                        price: priceController.text,
+                        galleryId: selectedGallery,
+                        artistId: selectedArtist,
                         rarity: selectedRarity!,
                         medium: selectedMedium!,
                         photos: photoartwork.toString(),
@@ -386,7 +420,22 @@ class _ArtworkListState extends State<ArtworkListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Artwork List"),
+        leading: TextButton(
+          child: Text(
+            "<",
+            style: TextStyle(
+              fontSize: 30,
+              color: Colors.black,
+              fontWeight: FontWeight.w100,
+            ),
+          ),
+          onPressed: () {
+            // Fungsi untuk kembali ke halaman sebelumnya
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.white,
+        title: Text("Artwork List", style: TextStyle(color: Colors.black)),
       ),
       body: ListView.builder(
         itemCount: artwork.length,
@@ -394,12 +443,10 @@ class _ArtworkListState extends State<ArtworkListPage> {
           final currentArtwork = artwork[index];
           return Container(
             child: ListTile(
-              leading: currentArtwork["photo"] != null
-                  ? Image.file(
-                      File(currentArtwork["photo"] ?? ''),
-                    )
+              leading: currentArtwork["photos"] != null
+                  ? Image.file(File(currentArtwork["photos"]))
                   : FlutterLogo(),
-              title: Text(currentArtwork["name"] ?? ''),
+              title: Text(currentArtwork["title"] ?? ''),
               subtitle: Text('Year: ${currentArtwork["year"]}' ?? ''),
               trailing: SizedBox(
                 width: 100,
@@ -427,10 +474,14 @@ class _ArtworkListState extends State<ArtworkListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
         onPressed: () {
           Form(null);
         },
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
