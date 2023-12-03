@@ -480,7 +480,7 @@ class _NamePageState extends State<NamePage> {
                     if (!isNameEmpty && consentToTerms) {
                       widget.user.name = nameController.text;
                       if (widget.user.email == 'admin@artsy.com' &&
-                          widget.user.password == 'Adminartsy123') {
+                          widget.user.password == 'Admin123') {
                         dbHelper.insertUser(widget.user);
                         Navigator.push(
                           context,
