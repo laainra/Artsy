@@ -25,12 +25,12 @@ class _ExploreSectionState extends State<ExploreSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200, // Set a fixed height or use constraints as per your layout
-      child: ListView(
-        physics: BouncingScrollPhysics(),
+      height: 350, // Set a fixed height or use constraints as per your layout
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            height: 200,
+          Expanded(
+            // Wrap the Column with Expanded
             child: PageView(
               physics: BouncingScrollPhysics(),
               controller: _pageController,
@@ -42,8 +42,8 @@ class _ExploreSectionState extends State<ExploreSection> {
                   child: Row(
                     children: [
                       Container(
-                        width: 50,
-                        height: 300,
+                        width: 120,
+                        height: 350,
                         child: Image(
                           fit: BoxFit.cover,
                           image: NetworkImage(
@@ -51,61 +51,228 @@ class _ExploreSectionState extends State<ExploreSection> {
                           ),
                         ),
                       ),
-                      Container(
-                        child: Padding(
-                          padding: EdgeInsets.all(15),
-                          child: Column(
-                            children: [
-                              Wrap(
-                                children: [
-                                  Text(
-                                    "data",
-                                    style: TextStyle(fontSize: 30),
-                                  ),
-                                  Text(
-                                    "data",
-                                    style: TextStyle(),
-                                  ),
-                                ],
-                              ),
-                              OutlinedButton(
-                                onPressed: () {
-                                  // Navigator.pushNamed(context, '/login');
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.white),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(40.0),
-                                  ),
-                                  minimumSize: Size(160, 45),
+                      Expanded(
+                        // Wrap the Column with Expanded
+                        child: Container(
+                          child: Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              children: [
+                                Wrap(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          "What is Lorem Ipsum?",
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "Lorep  ipsum dolor color ndsdhiuhusLorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                                child: Text(
-                                  'Read Article',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
+                                SizedBox(height: 10),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    // Navigator.pushNamed(context, '/login');
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.white),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40.0),
+                                    ),
+                                    minimumSize: Size(130, 35),
+                                  ),
+                                  child: Text(
+                                    'Read Article',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
+                Container(
+                  decoration: BoxDecoration(color: Colors.black),
+                  margin: EdgeInsets.all(0),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 350,
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(
+                            "https://images.unsplash.com/photo-1607355739828-0bf365440db5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1444&q=80",
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        // Wrap the Column with Expanded
+                        child: Container(
+                          child: Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              children: [
+                                Wrap(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          "What is Lorem Ipsum?",
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "Lorep  ipsum dolor color ndsdhiuhusLorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    // Navigator.pushNamed(context, '/login');
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.white),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40.0),
+                                    ),
+                                    minimumSize: Size(130, 35),
+                                  ),
+                                  child: Text(
+                                    'Read Article',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(color: Colors.black),
+                  margin: EdgeInsets.all(0),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 350,
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(
+                            "https://images.unsplash.com/photo-1607355739828-0bf365440db5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1444&q=80",
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        // Wrap the Column with Expanded
+                        child: Container(
+                          child: Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              children: [
+                                Wrap(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          "What is Lorem Ipsum?",
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "Lorep  ipsum dolor color ndsdhiuhusLorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    // Navigator.pushNamed(context, '/login');
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.white),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40.0),
+                                    ),
+                                    minimumSize: Size(130, 35),
+                                  ),
+                                  child: Text(
+                                    'Read Article',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 // Add other Container widgets as needed...
               ],
             ),
           ),
-          Center(
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: 60,
+            alignment: Alignment.center,
             child: Row(
               children: List.generate(
                 3,
                 (index) {
                   return Container(
                     margin: EdgeInsets.only(right: 5),
-                    alignment: Alignment.centerLeft,
+                    alignment: Alignment.center,
                     height: 9,
                     width: 9,
                     decoration: BoxDecoration(

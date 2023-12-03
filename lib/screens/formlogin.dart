@@ -188,7 +188,7 @@ class _LoginFormPageState extends State<LoginFormPage> {
                     isPasswordValid) {
                   // Check if email and password match admin credentials
                   if (emailController.text == 'admin@artsy.com' &&
-                      passwordController.text == 'Adminartsy123') {
+                      passwordController.text == 'Admin123') {
                     Navigator.push(
                       context,
                       MaterialPageRoute(

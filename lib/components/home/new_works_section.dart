@@ -58,11 +58,11 @@ class NewWorksSectionState extends State<NewWorksSection> {
           children: [
             Text(
               "New Works for You",
-              style: TextStyle(fontSize: 15),
+              style: TextStyle(fontSize: 16),
             ),
             Text(
               ">", // Change from "<" to ">"
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w100),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
             )
           ],
         ),
@@ -96,38 +96,29 @@ class NewWorksSectionState extends State<NewWorksSection> {
                                 Text(
                                   artItems[index]['artist'],
                                   style: TextStyle(
-                                      fontSize: 16), // Increase font size
+                                      fontSize: 13), // Increase font size
                                 ),
                                 Icon(Icons.favorite_border)
                               ]),
-                          SizedBox(
-                            height: 4,
-                          ),
                           Text(
-                            '${artItems[index]['title']} ${artItems[index]['year']}',
+                            '${artItems[index]['title']}, ${artItems[index]['year']}',
                             style: TextStyle(
-                              fontSize: 14, // Increase font size
+                              fontSize: 12, // Increase font size
                               fontStyle: FontStyle.italic,
-                              color: Color.fromARGB(122, 67, 61, 61),
+                              color: Color.fromARGB(121, 23, 22, 22),
                             ),
-                          ),
-                          SizedBox(
-                            height: 4,
                           ),
                           Text(
                             artItems[index]['gallery'],
                             style: TextStyle(
-                              fontSize: 14, // Increase font size
-                              color: Color.fromARGB(122, 67, 61, 61),
+                              fontSize: 12, // Increase font size
+                              color: Color.fromARGB(121, 23, 22, 22),
                             ),
-                          ),
-                          SizedBox(
-                            height: 4,
                           ),
                           Text(
                             artItems[index]['harga'],
                             style:
-                                TextStyle(fontSize: 14), // Increase font size
+                                TextStyle(fontSize: 12), // Increase font size
                           ),
                         ],
                       ),

@@ -194,6 +194,24 @@ class DBHelper {
     }
   }
 
+Future<UserModel?> getLogin(String email, String password) async {
+  try {
+    var dbClient = await database;
+    var res = await dbClient.rawQuery("SELECT * FROM user WHERE email = '$email' and password = '$password'");
+    
+    if (res.length > 0) {
+      return UserModel.fromMap(res.first);
+    }
+
+    return null;
+  } catch (e) {
+    // Handle exceptions here, such as printing an error message or logging
+    print("Error in getLogin: $e");
+    return null; // Return null or handle the error according to your needs
+  }
+}
+
+
   // Retrieve all users from the database
   Future<List<UserModel>> getAllUsers() async {
     try {
