@@ -25,6 +25,7 @@ class _ExploreSectionState extends State<ExploreSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.symmetric(vertical: 20),
       height: 350, // Set a fixed height or use constraints as per your layout
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

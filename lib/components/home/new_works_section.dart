@@ -68,7 +68,7 @@ class NewWorksSectionState extends State<NewWorksSection> {
         ),
         SizedBox(height: 15),
         Container(
-          height: 450,
+          height: 350,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: artItems.length,

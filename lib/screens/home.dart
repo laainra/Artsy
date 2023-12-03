@@ -1,3 +1,4 @@
+import 'package:artsy_prj/components/home/auction_section.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/components/home/new_works_section.dart';
 import 'package:artsy_prj/components/home/explore_section.dart';
@@ -135,9 +136,13 @@ class HomeTab extends StatelessWidget {
       body: Padding(
           padding: EdgeInsets.all(10),
           child: ListView.builder(
-            itemCount: 2,
+            itemCount: 3,
             itemBuilder: (context, index) {
-              return [NewWorksSection(), ExploreSection()][index];
+              return [
+                NewWorksSection(),
+                ExploreSection(),
+                AuctionSection()
+              ][index];
             },
           )),
     );
