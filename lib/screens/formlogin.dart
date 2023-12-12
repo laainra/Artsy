@@ -180,8 +180,6 @@ class _LoginFormPageState extends State<LoginFormPage> {
             Spacer(),
             ElevatedButton(
               onPressed: () {
-                // Fungsi untuk menangani tombol Next
-                // Fungsi untuk menangani tombol Next
                 if (!isEmailEmpty &&
                     isEmailValid &&
                     !isPasswordEmpty &&
@@ -201,7 +199,7 @@ class _LoginFormPageState extends State<LoginFormPage> {
                 } else {
                   // Show error message for empty fields
                   setState(() {
-                    errorMessage = 'Please fill in all fields.';
+                    errorMessage = 'Wrong password or email!.';
                   });
                 }
               },

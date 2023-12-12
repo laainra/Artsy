@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:artsy_prj/components/home/new_works_section.dart';
 import 'package:artsy_prj/components/home/explore_section.dart';
 import 'package:artsy_prj/screens/search.dart';
+import 'package:artsy_prj/screens/userbid.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -159,9 +160,7 @@ class SearchTab extends StatelessWidget {
 class CommentsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Comments Tab Content'),
-    );
+    return UserBidPage();
   }
 }
 

@@ -11,6 +11,7 @@ class AdminDashboardPage extends StatelessWidget {
     ["Show List", "/show-list"],
     ["Transaction List", "/transaction-list"],
     ["User List", "/user-list"],
+    ["Detail Artwork", "/detail-artwork"],
   ];
 
   @override

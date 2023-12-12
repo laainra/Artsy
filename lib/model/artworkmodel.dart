@@ -13,6 +13,7 @@ class ArtworkModel {
   String? location;
   String? notes;
   String? photos;
+  String? status;
   String? condition;
   String? frame;
   String? certificate;
@@ -36,6 +37,7 @@ class ArtworkModel {
     this.photos,
     this.condition,
     this.frame,
+    this.status,
     this.certificate,
     this.artistId,
     this.galleryId,
@@ -60,6 +62,7 @@ class ArtworkModel {
       'photos': photos,
       'condition': condition,
       'frame': frame,
+      'status': status,
       'certificate': certificate,
       'artistId': artistId,
       'galleryId': galleryId,
@@ -85,6 +88,7 @@ class ArtworkModel {
       photos: map['photos'],
       condition: map['condition'],
       frame: map['frame'],
+      status: map['status'],
       certificate: map['certificate'],
       artistId: map['artistId'],
       galleryId: map['galleryId'],

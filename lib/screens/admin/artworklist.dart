@@ -34,7 +34,8 @@ class _ArtworkListState extends State<ArtworkListPage> {
   int? selectedArtist;
   String? selectedRarity;
   String? selectedMedium;
-  String? photos;
+  List<String> selectedPhotos = [];
+  List<String> photos = [];
 
   List<String> galleries = ['Gallery A', 'Gallery B', 'Gallery C'];
   List<String> artists = ['Artist A', 'Artist B', 'Artist C'];
@@ -118,27 +119,33 @@ class _ArtworkListState extends State<ArtworkListPage> {
     }
   }
 
-  Future<String> getFilePicker() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'png', 'webm'],
-    );
+Future<void> getFilePicker() async {
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
+    type: FileType.custom,
+    allowMultiple: true,  // Enable multiple file selection
+    allowedExtensions: ['jpg', 'png', 'webm'],
+  );
 
-    if (result != null) {
-      PlatformFile sourceFile = result.files.first;
+  if (result != null) {
+    for (PlatformFile file in result.files) {
       final destination = await getExternalStorageDirectory();
       File? destinationFile =
-          File('${destination!.path}/${sourceFile.name.hashCode}');
-      final newFile = File(sourceFile.path!).copy(destinationFile!.path);
-      setState(() {
-        photos = destinationFile.path;
-      });
-      File(sourceFile.path!).delete();
-      return destinationFile.path;
-    } else {
-      return "Photo not uploaded!";
+          File('${destination!.path}/${file.name.hashCode}');
+      final newFile = File(file.path!).copy(destinationFile!.path);
+      selectedPhotos.add(destinationFile.path);
+      File(file.path!).delete();
     }
+
+    setState(() {
+      
+      photos = [selectedPhotos.join(", ")] ?? [];
+ // Save multiple paths as a comma-separated string
+    });
+  } else {
+    showSnackBar("No photos selected!");
   }
+}
+
 
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -168,7 +175,7 @@ class _ArtworkListState extends State<ArtworkListPage> {
       selectedArtist = null;
       selectedRarity = null;
       selectedMedium = null;
-      photos = null;
+      photos.clear();
     });
   }
 
@@ -347,7 +354,7 @@ class _ArtworkListState extends State<ArtworkListPage> {
                 ElevatedButton(
                   onPressed: () async {
                     if (id != null) {
-                      String? photoartwork = photos;
+                      List<String>? photoartwork = photos;
                       final data = ArtworkModel(
                         id: id,
                         title: titleController.text,
@@ -376,7 +383,7 @@ class _ArtworkListState extends State<ArtworkListPage> {
                       refreshData();
                       showSnackBar("Update successful");
                     } else {
-                      String? photoartwork = photos;
+                      List<String>? photoartwork = photos;
                       final data = ArtworkModel(
                         title: titleController.text,
                         materials: materialsController.text,
@@ -441,10 +448,11 @@ class _ArtworkListState extends State<ArtworkListPage> {
         itemCount: artwork.length,
         itemBuilder: (context, index) {
           final currentArtwork = artwork[index];
+          List<String> photos = (currentArtwork["photos"] as String).split(", ");
           return Container(
             child: ListTile(
               leading: currentArtwork["photos"] != null
-                  ? Image.file(File(currentArtwork["photos"]))
+                  ? Image.file(File(photos[0]))
                   : FlutterLogo(),
               title: Text(currentArtwork["title"] ?? ''),
               subtitle: Text('Year: ${currentArtwork["year"]}' ?? ''),

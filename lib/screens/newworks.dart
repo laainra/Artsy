@@ -3,19 +3,19 @@ import 'package:artsy_prj/dbhelper.dart'; // Import your DBHelper class
 import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
 
-class NewWorksSection extends StatefulWidget {
+class NewWorksPage extends StatefulWidget {
   @override
-  NewWorksSectionState createState() => NewWorksSectionState();
+  NewWorksPageState createState() => NewWorksPageState();
 }
 
-class NewWorksSectionState extends State<NewWorksSection> {
+class NewWorksPageState extends State<NewWorksPage> {
   final List<Map<String, dynamic>> artItems = [
     {
       'title': 'Ndebele Pattern',
       'artist': 'Esther Mahlangu',
       'year': 2021, // Change from "2021" to 2021
       'gallery': 'Tumo Gallery',
-      'image': ['assets/images/art1.png','assets/images/art2.png','assets/images/art1.png'],
+      'image': 'assets/images/art1.png',
       'harga': '€3,300',
     },
     {
@@ -23,7 +23,7 @@ class NewWorksSectionState extends State<NewWorksSection> {
       'artist': 'Ginny Casey',
       'year': 2023, // Change from "2023" to 2023
       'gallery': 'Half Gallery',
-      'image': ['assets/images/art2.png','assets/images/art2.png','assets/images/art1.png'],
+      'image': 'assets/images/art2.png',
       'harga': 'USD16,000',
     },
     {
@@ -31,7 +31,7 @@ class NewWorksSectionState extends State<NewWorksSection> {
       'artist': 'Kevin Claiborne',
       'year': 2023, // Change from "2023" to 2023
       'gallery': 'WORTHLESSSTUDIOS Benefit Auction',
-      'image': ['assets/images/art3.png','assets/images/art2.png','assets/images/art1.png'],
+      'image': 'assets/images/art3.png',
       'harga': 'USD3,500',
     },
     {
@@ -39,7 +39,7 @@ class NewWorksSectionState extends State<NewWorksSection> {
       'artist': 'Eric Alfaro',
       'year': 2023, // Change from "2023" to 2023
       'gallery': 'Carousel Fine Art',
-      'image': ['assets/images/art4.png','assets/images/art2.png','assets/images/art1.png'],
+      'image': 'assets/images/art4.png',
       'harga': 'USD12,500',
     },
     {
@@ -47,30 +47,30 @@ class NewWorksSectionState extends State<NewWorksSection> {
       'artist': 'Yusuf Epçin',
       'year': 2023, // Change from "2023" to 2023
       'gallery': 'The Artchi Gallery',
-      'image':['assets/images/art5.png','assets/images/art2.png','assets/images/art1.png'],
+      'image': 'assets/images/art5.png',
       'harga': '£1,200',
     },
   ];
 
     @override
-  // void initState() {
-  //   super.initState();
-  //   // Fetch artwork data from the database when the widget initializes
-  //   fetchArtworkData();
-  // }
+  void initState() {
+    super.initState();
+    // Fetch artwork data from the database when the widget initializes
+    fetchArtworkData();
+  }
 
-// void fetchArtworkData() async {
-//   var dbHelper = DBHelper();
+void fetchArtworkData() async {
+  var dbHelper = DBHelper();
   
-//   // Fetch artwork data with artist and gallery names using a join operation
-//   final artworkData = await dbHelper.getAllArtworksWithDetails();
+  // Fetch artwork data with artist and gallery names using a join operation
+  final artworkData = await dbHelper.getAllArtworksWithDetails();
 
-//   // Update the state with the fetched artwork data
-//   setState(() {
-//     artItems.clear();
-//     artItems.addAll(artworkData);
-//   });
-// }
+  // Update the state with the fetched artwork data
+  setState(() {
+    artItems.clear();
+    artItems.addAll(artworkData);
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -91,22 +91,20 @@ class NewWorksSectionState extends State<NewWorksSection> {
         ),
         SizedBox(height: 15),
         Container(
-          height: 410,
+          height: 380,
           child: ListView.builder(
-  scrollDirection: Axis.horizontal,
+  // scrollDirection: Axis.verti,
   itemCount: artItems.length,
   itemBuilder: (context, index) {
     return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailArtworkPage(
-                  artworkDetails: artItems[index],
-                ),
-              ),
-            );
-          },
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailArtworkPage(artworkDetails: artItems[index]),
+          ),
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -117,7 +115,7 @@ class NewWorksSectionState extends State<NewWorksSection> {
           child: Column(
             children: [
               Image.asset(
-                artItems[index]['image'][0],
+                artItems[index]['image'],
                 height: 250,
               ),
               SizedBox(height: 8),
@@ -128,7 +126,7 @@ class NewWorksSectionState extends State<NewWorksSection> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        artItems[index]['artist'],
+                        artItems[index]['artistName'],
                         style: TextStyle(fontSize: 13),
                       ),
                       Icon(Icons.favorite_border)
@@ -143,7 +141,7 @@ class NewWorksSectionState extends State<NewWorksSection> {
                     ),
                   ),
                   Text(
-                    artItems[index]['gallery'],
+                    artItems[index]['galleryName'],
                     style: TextStyle(
                       fontSize: 12,
                       color: Color.fromARGB(121, 23, 22, 22),
