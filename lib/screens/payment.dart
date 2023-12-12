@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:artsy_prj/model/shippingmodel.dart';
 
 class PurchasePage extends StatefulWidget {
   final Map<String, dynamic> artworkDetails;
@@ -13,6 +14,7 @@ class PurchasePage extends StatefulWidget {
 class _PurchasePageState extends State<PurchasePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  ShippingInfo? shippingInfo;
 
   @override
   void initState() {
@@ -83,12 +85,20 @@ class _PurchasePageState extends State<PurchasePage>
               controller: _tabController,
               children: [
                 // Halaman Shipping (pass required data to ShippingPage)
-                ShippingForm(artwork: widget.artworkDetails),
+                ShippingForm(
+                  artwork: widget.artworkDetails,
+                  onSaveAndContinue: (shippingInfo) {
+                    _tabController.animateTo(1); // Move to the next tab
+                  },
+                ),
                 // Halaman Payment (pass required data to PaymentPage)
-                PaymentPage(shipping: {}, artwork: widget.artworkDetails),
+                PaymentPage(
+                    shipping: shippingInfo, artwork: widget.artworkDetails),
                 // Halaman Review (pass required data to ReviewPage)
                 ReviewPage(
-                    shipping: {}, artwork: widget.artworkDetails, payment: {}),
+                    shipping: shippingInfo,
+                    artwork: widget.artworkDetails,
+                    payment: {}),
               ],
             ),
           ),
@@ -100,7 +110,10 @@ class _PurchasePageState extends State<PurchasePage>
 
 class ShippingForm extends StatefulWidget {
   final Map<String, dynamic> artwork;
-  const ShippingForm({Key? key, required this.artwork}) : super(key: key);
+  final Function(ShippingInfo) onSaveAndContinue;
+  const ShippingForm(
+      {Key? key, required this.artwork, required this.onSaveAndContinue})
+      : super(key: key);
   @override
   _ShippingFormState createState() => _ShippingFormState();
 }
@@ -108,6 +121,11 @@ class ShippingForm extends StatefulWidget {
 class _ShippingFormState extends State<ShippingForm> {
   final fullNameController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  final addressLine1Controller = TextEditingController();
+  final addressLine2Controller = TextEditingController();
+  final cityController = TextEditingController();
+  final stateController = TextEditingController();
+  final postalrController = TextEditingController();
   bool isShippingSelected = true;
   String selectedCountry = '';
   bool saveAddressForLaterUse = false;
@@ -276,6 +294,220 @@ class _ShippingFormState extends State<ShippingForm> {
                   visible: !isShippingSelected,
                   child: buildTextField("Phone Number", phoneNumberController),
                 ),
+                // Container>Column[Image,Text,Text,Text,Text,Divider,Row[Container>Text,Container>Text]),
+                Container(
+                  width: 330,
+                  height: 600,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                    color: Colors.grey,
+                  )),
+                  margin: EdgeInsets.all(15),
+                  child: Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Image.asset(widget.artwork["image"][0], height: 100),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          widget.artwork["artist"],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                            widget.artwork["title"] +
+                                ", " +
+                                widget.artwork["year"].toString(),
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic,
+                            )),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          widget.artwork["gallery"],
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text("Location", style: TextStyle(color: Colors.grey)),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text("Price " + widget.artwork["harga"]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Price",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text(widget.artwork["harga"],
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Shipping",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text("Calculated in next steps",
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Tax*",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text("Calculated in next steps",
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Total",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text("Waiting for final costs",
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        RichText(
+                            text: TextSpan(
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 15,
+                                ),
+                                children: [
+                              TextSpan(text: "*Additional duties and taxes "),
+                              TextSpan(
+                                  text: "may apply at import ",
+                                  style: TextStyle(
+                                      decoration: TextDecoration.underline)),
+                            ])),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration:
+                      BoxDecoration(color: Color.fromARGB(186, 215, 215, 215)),
+                  width: 365,
+                  height: 70,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.check_circle),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Your purchace is protected",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          RichText(
+                              overflow: TextOverflow.clip,
+                              text: TextSpan(
+                                  style: TextStyle(
+                                    overflow: TextOverflow.clip,
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                  children: [
+                                    TextSpan(text: "*Learn more about "),
+                                    TextSpan(
+                                        text: "Artsy's buyer protection. ",
+                                        style: TextStyle(
+                                            overflow: TextOverflow.clip,
+                                            decoration:
+                                                TextDecoration.underline)),
+                                  ])),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    ShippingInfo shippingInfo = ShippingInfo(
+                      fullName: fullNameController.text,
+                      country: selectedCountry,
+                      addressLine1: addressLine1Controller.text,
+                      addressLine2: addressLine2Controller.text,
+                      city: cityController.text,
+                      state: stateController.text,
+                      postalCode: postalrController.text,
+                      phoneNumber: phoneNumberController.text,
+                      saveAddressForLaterUse: saveAddressForLaterUse,
+                    );
+
+                    // Call the callback function to pass shipping information
+                    widget.onSaveAndContinue(shippingInfo);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    minimumSize: Size(350, 45),
+                  ),
+                  child: Text(
+                    "Save and Continue",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
                 Container(
                   alignment: Alignment.center,
                   child: RichText(
@@ -377,12 +609,12 @@ class _ShippingFormState extends State<ShippingForm> {
         SizedBox(
           height: 10,
         ),
-        buildTextField("Address Line 1", TextEditingController()),
-        buildTextField("Address Line 2 (Optional)", TextEditingController()),
-        buildTextField("City", TextEditingController()),
-        buildTextField("State/Province/Region", TextEditingController()),
-        buildTextField("Postal Code", TextEditingController()),
-        buildTextField("Phone Number", TextEditingController()),
+        buildTextField("Address Line 1", addressLine1Controller),
+        buildTextField("Address Line 2 (Optional)", addressLine2Controller),
+        buildTextField("City", cityController),
+        buildTextField("State/Province/Region", stateController),
+        buildTextField("Postal Code", postalrController),
+        buildTextField("Phone Number", phoneNumberController),
         Row(
           children: [
             Checkbox(
@@ -416,28 +648,309 @@ class _ShippingFormState extends State<ShippingForm> {
   }
 }
 
-class PaymentPage extends StatelessWidget {
-  final Map<String, dynamic> shipping;
+class PaymentPage extends StatefulWidget {
   final Map<String, dynamic> artwork;
+  final ShippingInfo? shipping;
 
   const PaymentPage({Key? key, required this.shipping, required this.artwork})
       : super(key: key);
+  // Define onSaveAndContinue method and paymentInfo variable
+  void onSaveAndContinue(Map<String, dynamic> paymentInfo) {
+    // Implement your logic here
+    // This method will be called when the button is pressed
+  }
+  @override
+  _PaymentPageState createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  bool isSelectedBankTf = false;
 
   @override
   Widget build(BuildContext context) {
-    // Payment page UI
+    // Shipping page UI
     return Container(
-      color: Colors.green,
+      margin: EdgeInsets.all(13),
+      color: Colors.white,
       child: Center(
-        child:
-            Text('Payment Page\n${shipping.toString()}\n${artwork.toString()}'),
+        child: ListView(
+          children: [
+            Text(
+              'Delivery method',
+              style: TextStyle(fontSize: 26),
+            ),
+            SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                    color: Colors.grey,
+                  )),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Radio(
+                        activeColor: Colors.black,
+                        value: true,
+                        groupValue: isSelectedBankTf,
+                        onChanged: (value) {},
+                      ),
+                      Text('Shipping'),
+                    ],
+                  ),
+                ),
+
+                // Container>Column[Image,Text,Text,Text,Text,Divider,Row[Container>Text,Container>Text]),
+                Container(
+                  width: 330,
+                  height: 600,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                    color: Colors.grey,
+                  )),
+                  margin: EdgeInsets.all(15),
+                  child: Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Image.asset(widget.artwork["image"][0], height: 100),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          widget.artwork["artist"],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                            widget.artwork["title"] +
+                                ", " +
+                                widget.artwork["year"].toString(),
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic,
+                            )),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          widget.artwork["gallery"],
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text("Location", style: TextStyle(color: Colors.grey)),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text("Price " + widget.artwork["harga"]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Price",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text(widget.artwork["harga"],
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Shipping",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text("Calculated in next steps",
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Tax*",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text("Calculated in next steps",
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: 80,
+                                  child: Text(
+                                    "Total",
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              Container(
+                                  width: 200,
+                                  child: Text("Waiting for final costs",
+                                      style: TextStyle(color: Colors.grey)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        RichText(
+                            text: TextSpan(
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 15,
+                                ),
+                                children: [
+                              TextSpan(text: "*Additional duties and taxes "),
+                              TextSpan(
+                                  text: "may apply at import ",
+                                  style: TextStyle(
+                                      decoration: TextDecoration.underline)),
+                            ])),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration:
+                      BoxDecoration(color: Color.fromARGB(186, 215, 215, 215)),
+                  width: 365,
+                  height: 70,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.check_circle),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Your purchace is protected",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          RichText(
+                              overflow: TextOverflow.clip,
+                              text: TextSpan(
+                                  style: TextStyle(
+                                    overflow: TextOverflow.clip,
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                  children: [
+                                    TextSpan(text: "*Learn more about "),
+                                    TextSpan(
+                                        text: "Artsy's buyer protection. ",
+                                        style: TextStyle(
+                                            overflow: TextOverflow.clip,
+                                            decoration:
+                                                TextDecoration.underline)),
+                                  ])),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Map<String, dynamic> paymentInfo = {};
+                    // Call the callback function to pass shipping information
+                    widget.onSaveAndContinue(paymentInfo);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    minimumSize: Size(350, 45),
+                  ),
+                  child: Text(
+                    "Save and Continue",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 15,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: "Need Help? ",
+                          style: TextStyle(
+                            fontSize: 13,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'Visit our help center',
+                          style: TextStyle(
+                            fontSize: 13,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        TextSpan(text: ' or '),
+                        TextSpan(
+                          text: 'ask a question',
+                          style: TextStyle(
+                            fontSize: 13,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class ReviewPage extends StatelessWidget {
-  final Map<String, dynamic> shipping;
+  final ShippingInfo? shipping;
   final Map<String, dynamic> artwork;
   final Map<String, dynamic> payment;
 
