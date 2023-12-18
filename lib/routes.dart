@@ -26,7 +26,4 @@ final routes = {
   '/artwork-list': (context) => ArtworkListPage(),
   '/gallery-list': (context) => GalleryListPage(),
   '/user-bid': (context) => UserBidPage(),
-// '/detail-artwork': (context) => DetailArtworkPage(artworkDetails),
-
-
 };

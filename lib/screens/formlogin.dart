@@ -11,6 +11,7 @@ class LoginFormPage extends StatefulWidget {
 class _LoginFormPageState extends State<LoginFormPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   bool isEmailEmpty = false;
   bool isEmailValid = true;
   bool isPasswordEmpty = false;
@@ -152,7 +153,7 @@ class _LoginFormPageState extends State<LoginFormPage> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 2),
             GestureDetector(
               onTap: () {
                 // Fungsi untuk menangani tombol Forgot Password
@@ -169,17 +170,20 @@ class _LoginFormPageState extends State<LoginFormPage> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 2),
             if (errorMessage.isNotEmpty)
               Center(
                 child: Text(
                   errorMessage,
                   style: TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
                 ),
               ),
             Spacer(),
             ElevatedButton(
               onPressed: () {
+                bool isEmailEmpty = emailController.text.isEmpty;
+                bool isPasswordEmpty = passwordController.text.isEmpty;
                 if (!isEmailEmpty &&
                     isEmailValid &&
                     !isPasswordEmpty &&
@@ -199,7 +203,7 @@ class _LoginFormPageState extends State<LoginFormPage> {
                 } else {
                   // Show error message for empty fields
                   setState(() {
-                    errorMessage = 'Wrong password or email!.';
+                    errorMessage = 'Please provide correct password and email!';
                   });
                 }
               },

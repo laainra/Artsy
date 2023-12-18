@@ -13,17 +13,17 @@ class SplashScreenPage extends StatefulWidget {
 class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
     openSplashScreen();
   }
 
   openSplashScreen() async {
-    //bisa diganti beberapa detik sesuai keinginan
+
     var durasiSplash = const Duration(seconds: 2);
 
     return Timer(durasiSplash, () {
-      //pindah ke halaman home
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) {
           return LandingPage();
