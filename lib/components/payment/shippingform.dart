@@ -86,84 +86,83 @@ class _ShippingFormState extends State<ShippingForm> {
   }
 // ...
 
-Widget buildShippingOption(String title, String description, int price,
-    {bool underline = false, bool isActive = false}) {
-  return InkWell(
-    onTap: () {
-      setState(() {
-        selectedShippingOption = title;
-        selectedShippingPrice = price;
-      });
-    },
-    child: Container(
-      height: 250,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey,
+  Widget buildShippingOption(String title, String description, int price,
+      {bool underline = false, bool isActive = false}) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          selectedShippingOption = title;
+          selectedShippingPrice = price;
+        });
+      },
+      child: Container(
+        height: 250,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Radio(
+              activeColor: Colors.black,
+              value: title,
+              groupValue: selectedShippingOption,
+              onChanged: (String? value) {
+                setState(() {
+                  selectedShippingOption = value!;
+                  selectedShippingPrice = price;
+                });
+              },
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 270,
+                  height: 30,
+                  child: Text(
+                    title,
+                    style: underline
+                        ? TextStyle(decoration: TextDecoration.underline)
+                        : null,
+                  ),
+                ),
+                Container(
+                  width: 270,
+                  height: 180,
+                  child: Text(
+                    description,
+                    overflow: TextOverflow.clip,
+                    style: underline
+                        ? TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontSize: 15,
+                            color: const Color.fromARGB(255, 176, 173, 173))
+                        : TextStyle(
+                            fontSize: 15,
+                            color: const Color.fromARGB(255, 176, 173, 173)),
+                  ),
+                ),
+                Container(
+                  width: 250,
+                  height: 30,
+                  child: Text(
+                    "USD" + price.toString(),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            )
+          ],
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Radio(
-            activeColor: Colors.black,
-            value: title,
-            groupValue: selectedShippingOption,
-            onChanged: (String? value) {
-              setState(() {
-                selectedShippingOption = value!;
-                selectedShippingPrice = price;
-              });
-            },
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 270,
-                height: 30,
-                child: Text(
-                  title,
-                  style: underline
-                      ? TextStyle(decoration: TextDecoration.underline)
-                      : null,
-                ),
-              ),
-              Container(
-                width: 270,
-                height: 180,
-                child: Text(
-                  description,
-                  overflow: TextOverflow.clip,
-                  style: underline
-                      ? TextStyle(
-                          decoration: TextDecoration.underline,
-                          fontSize: 15,
-                          color: const Color.fromARGB(255, 176, 173, 173))
-                      : TextStyle(
-                          fontSize: 15,
-                          color: const Color.fromARGB(255, 176, 173, 173)),
-                ),
-              ),
-              Container(
-                width: 250,
-                height: 30,
-                child: Text(
-                  "USD" + price.toString(),
-                  textAlign: TextAlign.right,
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    ),
-  );
-}
+    );
+  }
 
 // ...
-
 
   Widget buildArtworkInfo() {
     return Container(
@@ -396,7 +395,7 @@ Widget buildShippingOption(String title, String description, int price,
                       Radio(
                         activeColor: Colors.black,
                         value: "Arrange for pickup",
-                        groupValue: isShippingSelected,
+                        groupValue: selectedDeliveryMethod,
                         onChanged: (value) {
                           setState(() {
                             selectedDeliveryMethod = value as String;
@@ -493,6 +492,9 @@ Widget buildShippingOption(String title, String description, int price,
                           "Delivers to your door in 3-5 business days once packaged and shipped via a common carrier, depending on destination and prompt payment of applicable duties and taxes",
                           579,
                           isActive: !isPrioritySelected,
+                        ),
+                        SizedBox(
+                          height: 5,
                         ),
                         buildShippingOption(
                           "Priority",

@@ -827,10 +827,6 @@ class DBHelper {
     }
   }
 
- 
-
-
-
 Future<void> _seedData(Database db) async {
   try {
     await _seedUsers(db);

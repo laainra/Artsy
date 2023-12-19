@@ -136,6 +136,9 @@ class _PaymentPageState extends State<PaymentPage> {
                     ],
                   ),
                 ),
+                SizedBox(
+                  height: 5,
+                ),
                 Container(
                   height: 75,
                   decoration: BoxDecoration(
@@ -204,6 +207,9 @@ class _PaymentPageState extends State<PaymentPage> {
                       ),
                     ],
                   ),
+                ),
+                SizedBox(
+                  height: 5,
                 ),
                 Container(
                   height: 75,

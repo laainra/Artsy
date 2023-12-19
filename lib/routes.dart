@@ -1,5 +1,8 @@
 import 'package:artsy_prj/screens/admin/gallerylist.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
+import 'package:artsy_prj/screens/info.dart';
+import 'package:artsy_prj/screens/notifications.dart';
+import 'package:artsy_prj/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/screens/splash.dart';
 import 'package:artsy_prj/screens/login.dart';
@@ -26,4 +29,7 @@ final routes = {
   '/artwork-list': (context) => ArtworkListPage(),
   '/gallery-list': (context) => GalleryListPage(),
   '/user-bid': (context) => UserBidPage(),
+  '/notif': (context) => NotifPage(),
+  '/info': (context) => InfoPage(),
+  '/settings': (context) => Settings(),
 };

@@ -1,17 +1,17 @@
-import 'package:artsy_prj/components/payment/paymentsuccess.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
+import 'dart:math';
 
-class ReviewPage extends StatelessWidget {
+class PaymentSuccessPage extends StatelessWidget {
   final ShippingInfo? shipping;
   final PaymentInfo? payment;
   final Map<String, dynamic> artwork;
 
-  const ReviewPage({
+  const PaymentSuccessPage({
     Key? key,
     required this.shipping,
     required this.artwork,
@@ -140,7 +140,7 @@ class ReviewPage extends StatelessWidget {
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(color: Color.fromARGB(186, 215, 215, 215)),
       width: 365,
-      height: 70,
+      height: 200,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -151,8 +151,9 @@ class ReviewPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Your purchase is protected",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                "Congratulations! This artwork will be addes to your Collection once the gallery confirms the order.",
+                style:
+                    TextStyle(overflow: TextOverflow.clip, color: Colors.blue),
               ),
               RichText(
                 overflow: TextOverflow.clip,
@@ -163,9 +164,11 @@ class ReviewPage extends StatelessWidget {
                     fontSize: 12,
                   ),
                   children: [
-                    TextSpan(text: "*Learn more about "),
                     TextSpan(
-                      text: "Artsy's buyer protection. ",
+                        text:
+                            "View and manage all artworks in your Collection through your "),
+                    TextSpan(
+                      text: "profile. ",
                       style: TextStyle(
                         overflow: TextOverflow.clip,
                         decoration: TextDecoration.underline,
@@ -181,61 +184,118 @@ class ReviewPage extends StatelessWidget {
     );
   }
 
+  String getDayAfterToday() {
+    DateTime today = DateTime.now();
+    DateTime dayAfterToday = today.add(Duration(days: 1));
+
+    // Use DateFormat if you want to format the day name
+    // Example: import 'package:intl/intl.dart';
+    // String formattedDay = DateFormat('EEEE').format(dayAfterToday);
+
+    return dayAfterToday.weekday == 7
+        ? 'Sunday'
+        : dayAfterToday.weekday == 1
+            ? 'Monday'
+            : dayAfterToday.weekday == 2
+                ? 'Tuesday'
+                : dayAfterToday.weekday == 3
+                    ? 'Wednesday'
+                    : dayAfterToday.weekday == 4
+                        ? 'Thursday'
+                        : dayAfterToday.weekday == 5
+                            ? 'Friday'
+                            : 'Saturday';
+  }
+
+  int generateRandomOrderNumber() {
+    Random random = Random();
+    return random.nextInt(900000000) + 100000000;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Review page UI
-    return Material(
-      child: Container(
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          TextButton(
+            child: Text(
+              "X",
+              style: TextStyle(
+                fontSize: 25,
+                color: Colors.black,
+                fontWeight: FontWeight.w100,
+              ),
+            ),
+            onPressed: () {
+              // Function to go back to the previous page
+              Navigator.pop(context);
+            },
+          ),
+        ],
+        title: Text(
+          "Purchase",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w400),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 1,
+      ),
+      body: Container(
         margin: EdgeInsets.all(20),
         child: Center(
           child: ListView(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "Review Purchase",
-                style: TextStyle(fontSize: 26),
+              Container(
+                margin: EdgeInsets.all(4),
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.topLeft,
+                child: Image(
+                  image: AssetImage("assets/images/logo.png"),
+                  width: 110,
+                  height: 80,
+                ),
               ),
+              Text(
+                "Thank you, your order has been submitted",
+                style: TextStyle(fontSize: 26),
+                overflow: TextOverflow.clip,
+              ),
+              Text("Order #${generateRandomOrderNumber()}"),
               SizedBox(
                 height: 10,
               ),
-              // if (shipping != null &&
-              //     shipping!.shippingMethod == "Shipping") ...[
-              //   Container(
-              //     padding: EdgeInsets.all(10),
-              //     height: 220,
-              //     decoration: BoxDecoration(
-              //       border: Border.all(
-              //         color: Colors.grey,
-              //       ),
-              //     ),
-              //     child: Column(
-              //       children: [
-              //         Row(
-              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //           children: [
-              //             Text(
-              //               "Ship to",
-              //               style: TextStyle(fontSize: 13),
-              //             ),
-              //             Text(
-              //               "Change",
-              //               style: TextStyle(
-              //                   fontSize: 13,
-              //                   decoration: TextDecoration.underline),
-              //             )
-              //           ],
-              //         ),
-              //         Text('${shipping!.fullName}'),
-              //         Text('${shipping!.addressLine1}'),
-              //         Text('${shipping!.addressLine2}'),
-              //         Text(
-              //             '${shipping!.city}, ${shipping!.state} ${shipping!.postalCode}'),
-              //         Text('${shipping!.country}'),
-              //         Text('${shipping!.phoneNumber}'),
-              //       ],
-              //     ),
-              //   ),
-              // ],
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration:
+                    BoxDecoration(color: Color.fromARGB(186, 215, 215, 215)),
+                width: 365,
+                height: 70,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // Icon(Icons.check_circle),
+                    SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "You will receive a confirmation email by ${getDayAfterToday()}",
+                          style: TextStyle(
+                              color: Colors.grey, overflow: TextOverflow.clip),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              buildArtworkInfo(),
+              SizedBox(height: 10),
+              buildProtectionInfo(),
+              SizedBox(height: 10),
 
               Container(
                 padding: EdgeInsets.all(15),
@@ -316,49 +376,6 @@ class ReviewPage extends StatelessWidget {
               SizedBox(
                 height: 5,
               ),
-              if (shipping != null &&
-                  shipping!.shippingMethod == "Shipping") ...[
-                Container(
-                  padding: EdgeInsets.all(15),
-                  height: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Shipping",
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "Change",
-                            style: TextStyle(
-                                fontSize: 13,
-                                decoration: TextDecoration.underline),
-                          )
-                        ],
-                      ),
-                      // if (shipping != null &&
-                      //     shipping!.shippingMethod == "Shipping") ...[
-
-                      Text(
-                          '${shipping!.shippingOption} delivery (USD${shipping!.shippingPrice})'),
-
-                      // ],
-                    ],
-                  ),
-                ),
-              ],
-              SizedBox(
-                height: 5,
-              ),
               Container(
                 padding: EdgeInsets.all(15),
                 height: 100,
@@ -393,55 +410,36 @@ class ReviewPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
-              buildArtworkInfo(),
-              SizedBox(height: 10),
-              buildProtectionInfo(),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PaymentSuccessPage(
-                              shipping: shipping,
-                              artwork: artwork,
-                              payment: payment,
-                            )),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  minimumSize: Size(350, 45),
-                ),
-                child: const Text(
-                  "Submit",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
-              RichText(
-                overflow: TextOverflow.clip,
-                text: const TextSpan(
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "By clicking Submit, I agree to Artsy's ",
-                      style: TextStyle(fontSize: 13),
+              Container(
+                alignment: Alignment.center,
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15,
                     ),
-                    TextSpan(
-                      text: 'Conditions of Sale',
-                      style: TextStyle(
-                        fontSize: 13,
-                        decoration: TextDecoration.underline,
+                    children: [
+                      TextSpan(
+                        text: "Need Help? ",
+                        style: TextStyle(fontSize: 13),
                       ),
-                    ),
-                  ],
+                      TextSpan(
+                        text: 'Visit our help center',
+                        style: TextStyle(
+                          fontSize: 13,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      TextSpan(text: ' or '),
+                      TextSpan(
+                        text: 'ask a question',
+                        style: TextStyle(
+                          fontSize: 13,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 

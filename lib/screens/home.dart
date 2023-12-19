@@ -1,4 +1,6 @@
 import 'package:artsy_prj/components/home/auction_section.dart';
+import 'package:artsy_prj/screens/info.dart';
+import 'package:artsy_prj/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/components/home/new_works_section.dart';
 import 'package:artsy_prj/components/home/explore_section.dart';
@@ -129,7 +131,7 @@ class HomeTab extends StatelessWidget {
               color: Colors.black,
             ),
             onPressed: () {
-              // Tindakan yang diambil saat ikon notifikasi ditekan
+              Navigator.pushNamed(context, '/notif');
             },
           ),
         ],
@@ -167,17 +169,13 @@ class CommentsTab extends StatelessWidget {
 class PriceTagTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Price Tag Tab Content'),
-    );
+    return InfoPage();
   }
 }
 
 class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Profile Tab Content'),
-    );
+    return ProfilePage();
   }
 }
