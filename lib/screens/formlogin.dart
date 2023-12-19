@@ -1,3 +1,5 @@
+import 'package:artsy_prj/dbhelper.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:artsy_prj/screens/home.dart';
@@ -18,7 +20,34 @@ class _LoginFormPageState extends State<LoginFormPage> {
   bool isPasswordValid = true;
   bool isPasswordVisible = false;
   String errorMessage = '';
+  bool isLoginTrue = false;
+  final db = DBHelper();
 
+  login() async {
+    var response = await db.getLogin(UserModel(
+        email: emailController.text, password: passwordController.text));
+    if (response == true) {
+      //If login is correct, then goto notes
+      if (emailController.text == 'admin@artsy.com' &&
+          passwordController.text == 'Admin123') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminDashboardPage()),
+        );
+      } else {
+        // If not admin credentials, show error message
+        Navigator.pushNamed(context, '/home');
+      }
+    } else {
+      //If not, true the bool value to show error message
+      setState(() {
+        isLoginTrue = true;
+        errorMessage = 'Incorrect email or password';
+      });
+    }
+  }
+
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -188,18 +217,8 @@ class _LoginFormPageState extends State<LoginFormPage> {
                     isEmailValid &&
                     !isPasswordEmpty &&
                     isPasswordValid) {
+                  login();
                   // Check if email and password match admin credentials
-                  if (emailController.text == 'admin@artsy.com' &&
-                      passwordController.text == 'Admin123') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AdminDashboardPage()),
-                    );
-                  } else {
-                    // If not admin credentials, show error message
-                    Navigator.pushNamed(context, '/home');
-                  }
                 } else {
                   // Show error message for empty fields
                   setState(() {

@@ -22,7 +22,7 @@ class _HowSectionState extends State<HowSection> {
             title,
             style: TextStyle(
               fontSize: 22.0,
-              fontWeight: FontWeight.bold,
+              // fontWeight: FontWeight.bold,
             ),
             overflow: TextOverflow.clip,
           ),
@@ -30,7 +30,7 @@ class _HowSectionState extends State<HowSection> {
             subtitle,
             overflow: TextOverflow.clip,
             style: TextStyle(
-              fontSize: 16.0,
+              fontSize: 14.0,
             ),
           ),
         ],
@@ -43,6 +43,8 @@ class _HowSectionState extends State<HowSection> {
     return Container(
       margin: EdgeInsets.all(15),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             "How it works",
@@ -52,7 +54,7 @@ class _HowSectionState extends State<HowSection> {
             height: 10,
           ),
           buildTextField('01', 'Submit your artwork',
-              "Enter the artist' nama on the submission page. If the artist in our database, you'll be able to upload images and artwork details"),
+              "Enter the artist's name on the submission page. If the artist is in our database, you'll be able to upload images and artwork details"),
           SizedBox(
             height: 10,
           ),
@@ -62,7 +64,7 @@ class _HowSectionState extends State<HowSection> {
             height: 10,
           ),
           buildTextField('03', 'Get a sales option',
-              "Review your tailored sales strategy and price estimate. We'll select the be3st way to sell your work--either at auction, through private sale, or a direct listing on Artsy "),
+              "Review your tailored sales strategy and price estimate. We'll select the best way to sell your work—either at auction, through private sale, or a direct listing on Artsy "),
           SizedBox(
             height: 10,
           ),

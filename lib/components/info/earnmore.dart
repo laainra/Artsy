@@ -18,15 +18,18 @@ class _EarnMoreSectionState extends State<EarnMoreSection> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(180.0),
               border: Border.all(
-                color: Colors.black, // Set the border color
-                width: 2.0, // Set the border width
+                color: Colors.black,
+                width: 2.0,
               ),
             ),
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(10),
             child: Icon(
               icon,
-              size: 30.0,
+              size: 27.0,
             ),
+          ),
+          SizedBox(
+            height: 10,
           ),
           Text(
             title,
@@ -35,6 +38,9 @@ class _EarnMoreSectionState extends State<EarnMoreSection> {
               fontWeight: FontWeight.bold,
             ),
             overflow: TextOverflow.clip,
+          ),
+          SizedBox(
+            height: 10,
           ),
           Text(
             subtitle,
@@ -53,21 +59,33 @@ class _EarnMoreSectionState extends State<EarnMoreSection> {
     return Container(
       margin: EdgeInsets.all(15),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           buildTextField(
-              Icons.attach_money_outlined,
-              'Earn more from your sale',
-              'With lower fees than traditional auction houses and dealers, you take home more of the final sale price'),
+            Icons.attach_money_outlined,
+            'Earn more from your sale',
+            'With lower fees than traditional auction houses and dealers, you take home more of the final sale price',
+          ),
           SizedBox(
             height: 10,
           ),
-          buildTextField(Icons.star_border_outlined, 'Tap into our expertise',
-              'Our team has a wealth of experience in the secondary art market. A dedicates specialist will be with you every step of the way'),
+          buildTextField(
+            Icons.star_border_outlined,
+            'Tap into our expertise',
+            'Our team has a wealth of experience in the secondary art market. A dedicates specialist will be with you every step of the way',
+          ),
           SizedBox(
             height: 10,
           ),
-          buildTextField(Icons.web_outlined, 'Reach a global network',
-              "With the world's largest network of collectors, we match your work the most interested buyers in over 190 countries"),
+          buildTextField(
+            Icons.public_outlined,
+            'Reach a global network',
+            "With the world's largest network of collectors, we match your work the most interested buyers in over 190 countries",
+          ),
+          SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );

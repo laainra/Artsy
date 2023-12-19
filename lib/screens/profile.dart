@@ -9,11 +9,10 @@ import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
 
 class ProfilePage extends StatefulWidget {
-  // final Map<String, dynamic> artworkDetails;
   const ProfilePage({
     Key? key,
-    //  required this.artworkDetails
   }) : super(key: key);
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -31,63 +30,95 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              // Function to go back to the previous page
-              Navigator.pop(context);
-            },
-          ),
-        ],
-        title: Container(
-            margin: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    color: Colors.grey,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(180.0),
-                    ),
-                    child: Icon(Icons.person_2_outlined),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        "My Name",
-                        style: TextStyle(fontSize: 24),
-                      ),
-                      Text(
-                        "Member since 2023",
-                        style: TextStyle(fontSize: 16, color: Colors.grey,),
-                      ),
-                    ],
-                  )
-                ]),
-                TextButton.icon(
-                    onPressed: () {
-                      //
-                    },
-                    icon: Icon(Icons.location_pin, color: Colors.grey,),
-                    label: Text("Indonesia", style: TextStyle( color: Colors.grey,),))
-              ],
-            )),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
       body: Column(
         children: [
+          // Custom Header
+          Container(
+            padding: EdgeInsets.only(top: 40, left: 15, right: 15),
+            height: 180,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  offset: Offset(0, 2),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Icon(Icons.person_outline,
+                                  color: Colors.white),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "My Name",
+                                  style: TextStyle(fontSize: 19),
+                                ),
+                                Text(
+                                  "Member since 2023",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ]),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                    )
+                  ],
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    //
+                  },
+                  icon: Icon(
+                    Icons.location_pin,
+                    color: Colors.grey,
+                  ),
+                  label: Text(
+                    "Indonesia",
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           // TabBar
           Container(
-            height: 40,
+            height: 50,
             child: TabBar(
               controller: _tabController,
               labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),

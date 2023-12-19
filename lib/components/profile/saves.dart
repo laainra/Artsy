@@ -12,19 +12,28 @@ class _SavesTabState extends State<SavesTab> {
     return Container(
         margin: EdgeInsets.all(15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
                   width: 80,
                   height: 80,
-                  color: const Color.fromARGB(255, 217, 207, 207),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 217, 207, 207),
+                    border: Border.all(
+                        color: Colors.black, width: 1), // Border added here
+                  ),
                   child: Icon(Icons.browser_not_supported_outlined),
                 ),
                 Container(
                   width: 80,
                   height: 80,
-                  color: const Color.fromARGB(255, 217, 207, 207),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 217, 207, 207),
+                    border: Border.all(
+                        color: Colors.black, width: 1), // Border added here
+                  ),
                   child: Icon(Icons.browser_not_supported_outlined),
                 )
               ],
@@ -34,13 +43,21 @@ class _SavesTabState extends State<SavesTab> {
                 Container(
                   width: 80,
                   height: 80,
-                  color: const Color.fromARGB(255, 217, 207, 207),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 217, 207, 207),
+                    border: Border.all(
+                        color: Colors.black, width: 1), // Border added here
+                  ),
                   child: Icon(Icons.browser_not_supported_outlined),
                 ),
                 Container(
                   width: 80,
                   height: 80,
-                  color: const Color.fromARGB(255, 217, 207, 207),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 217, 207, 207),
+                    border: Border.all(
+                        color: Colors.black, width: 1), // Border added here
+                  ),
                   child: Icon(Icons.browser_not_supported_outlined),
                 )
               ],

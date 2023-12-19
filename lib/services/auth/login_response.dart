@@ -12,9 +12,9 @@ class LoginResponse {
 
   LoginResponse(this._callBack);
 
-void doLogin(String username, String password) {
+void doLogin(String email, String password) {
   loginRequest
-      .getLogin(username, password)
+      .getLogin(email, password)
       .then((user) {
         try {
           if (user != null) {
