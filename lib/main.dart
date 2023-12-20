@@ -18,6 +18,7 @@ void main() async {
     print('User ID: ${user.id}');
     print('Email: ${user.email}');
     print('Password: ${user.password}');
+    print('Created: ${user.createdAt}');
     // Add more fields if needed
 
     print('---'); // Separator between users

@@ -492,7 +492,7 @@ class _NamePageState extends State<NamePage> {
                         dbHelper.insertUser(widget.user);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
+                          MaterialPageRoute(builder: (context) => HomePage(user: widget.user,)),
                         );
                       }
                     } else {

@@ -138,9 +138,13 @@ class _AccountSettingsState extends State<AccountSettings> {
             ),
           ),
           Container(
+              alignment: Alignment.topLeft,
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               height: 30,
-              child: Text("LINKED ACCOUNTS")),
+              child: Text(
+                "LINKED ACCOUNTS",
+                textAlign: TextAlign.start,
+              )),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             height: 30,

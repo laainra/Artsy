@@ -23,29 +23,44 @@ class _LoginFormPageState extends State<LoginFormPage> {
   bool isLoginTrue = false;
   final db = DBHelper();
 
-  login() async {
-    var response = await db.getLogin(UserModel(
-        email: emailController.text, password: passwordController.text));
-    if (response == true) {
-      //If login is correct, then goto notes
-      if (emailController.text == 'admin@artsy.com' &&
-          passwordController.text == 'Admin123') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AdminDashboardPage()),
-        );
-      } else {
-        // If not admin credentials, show error message
-        Navigator.pushNamed(context, '/home');
-      }
+login() async {
+  var response = await db.getLogin(UserModel(
+      email: emailController.text, password: passwordController.text));
+  
+  UserModel user; // Define the user variable outside the if conditions
+  
+  if (response == true) {
+    // If login is correct, then go to notes
+    if (emailController.text == 'admin@artsy.com' &&
+        passwordController.text == 'Admin123') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AdminDashboardPage()),
+      );
+      return; // Return to avoid the rest of the code below
     } else {
-      //If not, true the bool value to show error message
-      setState(() {
-        isLoginTrue = true;
-        errorMessage = 'Incorrect email or password';
-      });
+      // If not admin credentials, set the user data
+      user = UserModel(
+        email: emailController.text,
+        // Add other user properties here
+      );
     }
+  } else {
+    // If not, set the bool value to show an error message
+    setState(() {
+      isLoginTrue = true;
+      errorMessage = 'Incorrect email or password';
+    });
+    return; // Return to avoid the rest of the code below
   }
+
+  // Continue with the rest of the code here, passing the user to the home screen
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => HomePage(user: user)),
+  );
+}
+
 
   final formKey = GlobalKey<FormState>();
   @override

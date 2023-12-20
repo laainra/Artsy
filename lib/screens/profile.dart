@@ -1,17 +1,19 @@
 import 'package:artsy_prj/components/profile/collections.dart';
 import 'package:artsy_prj/components/profile/insight.dart';
 import 'package:artsy_prj/components/profile/saves.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
+import 'dart:io';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({
-    Key? key,
-  }) : super(key: key);
+  final UserModel user;
+
+  const ProfilePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -59,26 +61,45 @@ class _ProfilePageState extends State<ProfilePage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Icon(Icons.person_outline,
-                                  color: Colors.white),
-                            ),
+                            widget.user.profileImage != null
+                                ? Container(
+                                    width: 30,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    
+                                        child: Image.file(
+                                        File(widget.user.profileImage!)),
+                                  )
+                                : Container(
+                                    width: 30,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Icon(Icons.person_outline,
+                                        color: Colors.white),
+                                    
+                                  ),
                             SizedBox(
                               width: 5,
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "My Name",
-                                  style: TextStyle(fontSize: 19),
-                                ),
+                                if (widget.user.name != null)
+                                  Text(
+                                    widget.user.name!,
+                                    style: TextStyle(fontSize: 19),
+                                  )
+                                else
+                                  Text(
+                                    "My Name",
+                                    style: TextStyle(fontSize: 19),
+                                  ),
                                 Text(
                                   "Member since 2023",
                                   style: TextStyle(

@@ -1,3 +1,5 @@
+import 'package:artsy_prj/screens/addartwork.dart';
+import 'package:artsy_prj/screens/selectartist.dart';
 import 'package:flutter/material.dart';
 
 class InsightTab extends StatefulWidget {
@@ -47,15 +49,11 @@ class _InsightTabState extends State<InsightTab> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => PaymentSuccessPage(
-                //             shipping: shipping,
-                //             artwork: artwork,
-                //             payment: payment,
-                //           )),
-                // );
+                // Navigator.pushNamed(context, '/add-artwork');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SelectArtist()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,

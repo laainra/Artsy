@@ -45,25 +45,10 @@ class _DetailEditorialPageState extends State<DetailEditorialPage> {
         ),
         backgroundColor: Colors.white,
         actions: [
-          Container(
-            margin: EdgeInsets.all(8),
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.black),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              onPressed: () {
-                
-              },
-              icon: Icon(
-                Icons.notifications_outlined,
-                size: 24,
-                color: Colors.black,
-              ),
-              label: Text("Create Alert", style: TextStyle(fontSize: 12)),
-            ),
+          Icon(
+            Icons.share_outlined,
+            size: 24,
+            color: Colors.black,
           ),
         ],
         elevation: 0,
@@ -79,11 +64,15 @@ class _DetailEditorialPageState extends State<DetailEditorialPage> {
                   margin: EdgeInsets.only(bottom: 20.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Art",
-                        style: TextStyle(fontSize: 15),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w400),
+                      ),
+                      SizedBox(
+                        height: 10,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +80,7 @@ class _DetailEditorialPageState extends State<DetailEditorialPage> {
                           Container(
                             margin: EdgeInsets.only(bottom: 20),
                             width: 300,
-                            height: 300,
+                            height: 299,
                             child: PageView(
                               controller: _pageController,
                               onPageChanged: (index) {
@@ -117,7 +106,8 @@ class _DetailEditorialPageState extends State<DetailEditorialPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
-                          widget.editorialDetails.length,
+                          (widget.editorialDetails['image'] as List<String>)
+                              .length,
                           (index) => buildPageIndicator(index),
                         ),
                       ),
@@ -143,6 +133,18 @@ class _DetailEditorialPageState extends State<DetailEditorialPage> {
                   widget.editorialDetails['content'],
                   overflow: TextOverflow.clip,
                   style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  widget.editorialDetails['author'],
+                  style: TextStyle(fontSize: 18),
+                ),
+                Text(
+                  widget.editorialDetails['author'] +
+                      " is Artsy's Staff Writer",
+                  style: TextStyle(fontSize: 13),
                 ),
               ],
             ),

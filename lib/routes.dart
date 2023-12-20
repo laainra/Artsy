@@ -1,10 +1,12 @@
 import 'package:artsy_prj/screens/accountsetting.dart';
 import 'package:artsy_prj/screens/addartist.dart';
+import 'package:artsy_prj/screens/addartwork.dart';
 import 'package:artsy_prj/screens/admin/gallerylist.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
 import 'package:artsy_prj/screens/editprofile.dart';
 import 'package:artsy_prj/screens/info.dart';
 import 'package:artsy_prj/screens/notifications.dart';
+import 'package:artsy_prj/screens/selectartist.dart';
 import 'package:artsy_prj/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/screens/splash.dart';
@@ -25,7 +27,7 @@ final routes = {
   '/register': (context) => RegisterPage(),
   '/login_form': (context) => LoginFormPage(),
   '/register_form': (context) => EmailPage(),
-  '/home': (context) => HomePage(),
+  // '/home': (context) => HomePage(),
   '/admin_dashboard': (context) => AdminDashboardPage(),
   '/artist-list': (context) => ArtistList(),
   '/user-list': (context) => UserListPage(),
@@ -36,6 +38,9 @@ final routes = {
   '/info': (context) => InfoPage(),
   '/settings': (context) => Settings(),
   '/account-settings': (context) => AccountSettings(),
+  // '/add-artwork': (context) => AddArtworks(),
+  '/select-artist': (context) => SelectArtist(),
   '/add-artist': (context) => AddArtist(),
   '/edit-profile': (context) => EditProfile(),
+  // '/edit-profile': (context) => EditProfile(),
 };

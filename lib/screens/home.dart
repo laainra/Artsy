@@ -1,4 +1,6 @@
+import 'package:artsy_prj/components/home/artsy_editorial_section.dart';
 import 'package:artsy_prj/components/home/auction_section.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/screens/info.dart';
 import 'package:artsy_prj/screens/profile.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,9 @@ import 'package:artsy_prj/screens/search.dart';
 import 'package:artsy_prj/screens/userbid.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final UserModel user;
+
+  const HomePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -17,13 +21,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    HomeTab(),
-    SearchTab(),
-    CommentsTab(),
-    PriceTagTab(),
-    ProfileTab(),
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HomeTab(user: widget.user),
+      SearchTab(),
+      CommentsTab(),
+      PriceTagTab(),
+      ProfileTab(user: widget.user),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +120,10 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeTab extends StatelessWidget {
-  const HomeTab({Key? key}) : super(key: key);
+  final UserModel user;
+
+  const HomeTab({Key? key, required this.user}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,12 +152,13 @@ class HomeTab extends StatelessWidget {
       body: Padding(
           padding: EdgeInsets.all(10),
           child: ListView.builder(
-            itemCount: 3,
+            itemCount: 4,
             itemBuilder: (context, index) {
               return [
                 NewWorksSection(),
                 ExploreSection(),
-                AuctionSection()
+                AuctionSection(),
+                EditorialSection()
               ][index];
             },
           )),
@@ -174,8 +188,12 @@ class PriceTagTab extends StatelessWidget {
 }
 
 class ProfileTab extends StatelessWidget {
+  final UserModel user;
+
+  const ProfileTab({Key? key, required this.user}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return ProfilePage();
+    return ProfilePage(user: user);
   }
 }
