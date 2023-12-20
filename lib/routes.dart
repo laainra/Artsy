@@ -1,5 +1,8 @@
+import 'package:artsy_prj/screens/accountsetting.dart';
+import 'package:artsy_prj/screens/addartist.dart';
 import 'package:artsy_prj/screens/admin/gallerylist.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
+import 'package:artsy_prj/screens/editprofile.dart';
 import 'package:artsy_prj/screens/info.dart';
 import 'package:artsy_prj/screens/notifications.dart';
 import 'package:artsy_prj/screens/settings.dart';
@@ -32,4 +35,7 @@ final routes = {
   '/notif': (context) => NotifPage(),
   '/info': (context) => InfoPage(),
   '/settings': (context) => Settings(),
+  '/account-settings': (context) => AccountSettings(),
+  '/add-artist': (context) => AddArtist(),
+  '/edit-profile': (context) => EditProfile(),
 };

@@ -16,14 +16,14 @@ class _InfoPageState extends State<InfoPage> {
     return Scaffold(
         backgroundColor: Colors.white,
         body: Container(
-            margin: EdgeInsets.all(15),
+            // padding: EdgeInsets.all(15),
             child: ListView(
-              children: [
-                SellArtSection(),
-                EarnMoreSection(),
-                SalesStrategySection(),
-                HowSection()
-              ],
-            )));
+          children: [
+            SellArtSection(),
+            EarnMoreSection(),
+            SalesStrategySection(),
+            HowSection()
+          ],
+        )));
   }
 }

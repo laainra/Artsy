@@ -199,11 +199,11 @@ class DBHelper {
   }
 
   Future<List<Map<String, dynamic>>> getAllArtworksWithDetails() async {
-  try {
-    final db = await database;
+    try {
+      final db = await database;
 
-    // Perform a join operation to get artist and gallery names
-    final result = await db.rawQuery('''
+      // Perform a join operation to get artist and gallery names
+      final result = await db.rawQuery('''
       SELECT 
         artworks.*, 
         artists.name AS artistName, 
@@ -214,13 +214,12 @@ class DBHelper {
         LEFT JOIN galleries ON artworks.galleryId = galleries.id
     ''');
 
-    return result;
-  } catch (e) {
-    print('Error retrieving artwork details: $e');
-    return [];
+      return result;
+    } catch (e) {
+      print('Error retrieving artwork details: $e');
+      return [];
+    }
   }
-}
-
 
   Future<int> insertTransaction(TransactionModel transaction) async {
     final db = await database;
@@ -298,33 +297,28 @@ class DBHelper {
     }
   }
 
-  Future<UserModel?> getLogin(String email, String password) async {
-    try {
-      var dbClient = await database;
-      var res = await dbClient.rawQuery(
-          "SELECT * FROM user WHERE email = '$email' and password = '$password'");
+  Future<bool> getLogin(UserModel user) async {
+    var dbClient = await database;
+    var res = await dbClient.rawQuery(
+      "SELECT * FROM users WHERE email = ? and password = ?",
+      [user.email, user.password],
+    );
 
-      if (res.length > 0) {
-        return UserModel.fromMap(res.first);
-      }
-
-      return null;
-    } catch (e) {
-      // Handle exceptions here, such as printing an error message or logging
-      print("Error in getLogin: $e");
-      return null; // Return null or handle the error according to your needs
-    }
+    return res.isNotEmpty;
   }
 
-  // Retrieve all users from the database
   Future<List<UserModel>> getAllUsers() async {
     try {
       final db = await database;
-      final List<Map<String, dynamic>> maps = await db.query(userTable);
+      final List<Map<String, dynamic>> maps =
+          await db.rawQuery("SELECT * from users");
 
-      return List.generate(maps.length, (i) {
+      // Convert the list of maps into a list of UserModel objects
+      List<UserModel> users = List.generate(maps.length, (i) {
         return UserModel.fromMap(maps[i]);
       });
+
+      return users;
     } catch (e) {
       print('Error retrieving all users: $e');
       return [];
@@ -363,7 +357,6 @@ class DBHelper {
     }
   }
 
-  // Retrieve an artist by ID from the database
   Future<ArtistModel?> getArtist(int id) async {
     try {
       final db = await database;
@@ -381,7 +374,6 @@ class DBHelper {
     }
   }
 
-  // Retrieve all artists from the database
   Future<List<Map<String, dynamic>>> getAllArtists() async {
     try {
       final db = await database;
@@ -392,7 +384,6 @@ class DBHelper {
     }
   }
 
-  // Update an artist in the database
   Future<void> updateArtist(ArtistModel artist) async {
     try {
       final db = await database;
@@ -403,7 +394,6 @@ class DBHelper {
     }
   }
 
-  // Delete an artist by ID from the database
   Future<void> deleteArtist(int id) async {
     try {
       final db = await database;
@@ -413,7 +403,6 @@ class DBHelper {
     }
   }
 
-  // Insert an artwork into the database
   Future<void> insertArtwork(ArtworkModel artwork) async {
     try {
       final db = await database;
@@ -827,98 +816,94 @@ class DBHelper {
     }
   }
 
-Future<void> _seedData(Database db) async {
-  try {
-    await _seedUsers(db);
-    await _seedArtists(db);
-    await _seedGalleries(db);
-    await _seedArtworks(db);
-  } catch (e) {
-    print('Seeding error: $e');
-    rethrow;
+  Future<void> _seedData(Database db) async {
+    try {
+      await _seedUsers(db);
+      await _seedArtists(db);
+      await _seedGalleries(db);
+      await _seedArtworks(db);
+    } catch (e) {
+      print('Seeding error: $e');
+      rethrow;
+    }
   }
-}
 
-Future<void> _seedUsers(Database db) async {
-  for (int i = 1; i <= 5; i++) {
-    await db.rawInsert('''
+  Future<void> _seedUsers(Database db) async {
+    for (int i = 1; i <= 5; i++) {
+      await db.rawInsert('''
       INSERT INTO $userTable (email, password, profileImage, name, location, profession, positions, about, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', [
-      'user$i@example.com',
-      'password$i',
-      'profile_image_url$i',
-      'User $i',
-      'Location $i',
-      'Profession $i',
-      'Positions $i',
-      'About user $i',
-      DateTime.now().toIso8601String(),
-    ]);
+        'user$i@example.com',
+        'password$i',
+        'profile_image_url$i',
+        'User $i',
+        'Location $i',
+        'Profession $i',
+        'Positions $i',
+        'About user $i',
+        DateTime.now().toIso8601String(),
+      ]);
+    }
   }
-}
 
-Future<void> _seedArtists(Database db) async {
-  for (int i = 1; i <= 5; i++) {
-    await db.rawInsert('''
+  Future<void> _seedArtists(Database db) async {
+    for (int i = 1; i <= 5; i++) {
+      await db.rawInsert('''
       INSERT INTO $artistTable (name, nationality, birthYear, deathYear, photo)
       VALUES (?, ?, ?, ?, ?)
     ''', [
-      'Artist $i',
-      'Nationality $i',
-      'Birth Year $i',
-      'Death Year $i',
-      'artist_photo_url$i',
-    ]);
+        'Artist $i',
+        'Nationality $i',
+        'Birth Year $i',
+        'Death Year $i',
+        'artist_photo_url$i',
+      ]);
+    }
   }
-}
 
-Future<void> _seedGalleries(Database db) async {
-  for (int i = 1; i <= 5; i++) {
-    await db.rawInsert('''
+  Future<void> _seedGalleries(Database db) async {
+    for (int i = 1; i <= 5; i++) {
+      await db.rawInsert('''
       INSERT INTO $galleryTable (name, location, description, photo)
       VALUES (?, ?, ?, ?)
     ''', [
-      'Gallery $i',
-      'Location $i',
-      'Description $i',
-      'gallery_photo_url$i',
-    ]);
+        'Gallery $i',
+        'Location $i',
+        'Description $i',
+        'gallery_photo_url$i',
+      ]);
+    }
   }
-}
 
-Future<void> _seedArtworks(Database db) async {
-  for (int i = 1; i <= 5; i++) {
-    await db.rawInsert('''
+  Future<void> _seedArtworks(Database db) async {
+    for (int i = 1; i <= 5; i++) {
+      await db.rawInsert('''
       INSERT INTO $artworkTable (title, medium, year, materials, rarity, height, width, depth, price, provenance, location, notes, photos, condition, frame, status, certificate, artistId, galleryId)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', [
-      'Artwork $i',
-      'Medium $i',
-      'Year $i',
-      'Materials $i',
-      'Rarity $i',
-      Random().nextDouble() * 100, // height
-      Random().nextDouble() * 100, // width
-      Random().nextDouble() * 100, // depth
-      'Price $i',
-      'Provenance $i',
-      'Location $i',
-      'Notes $i',
-      'Photos $i',
-      'Condition $i',
-      'Frame $i',
-      'sell', // status
-      'Certificate $i',
-      i, // artistId
-      i, // galleryId
-    ]);
+        'Artwork $i',
+        'Medium $i',
+        'Year $i',
+        'Materials $i',
+        'Rarity $i',
+        Random().nextDouble() * 100, // height
+        Random().nextDouble() * 100, // width
+        Random().nextDouble() * 100, // depth
+        'Price $i',
+        'Provenance $i',
+        'Location $i',
+        'Notes $i',
+        'Photos $i',
+        'Condition $i',
+        'Frame $i',
+        'sell', // status
+        'Certificate $i',
+        i, // artistId
+        i, // galleryId
+      ]);
+    }
   }
-}
-
-
-
-
 
   // // Insert a result auction into the database
   // Future<void> insertResultAuction(ResultAuctionModel resultAuction) async {

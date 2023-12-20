@@ -1,8 +1,27 @@
+import 'package:artsy_prj/dbhelper.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/routes.dart';
 import 'package:flutter/material.dart';
 
 
-void main() {
+void main() async {
+   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize your database and other necessary setup
+  final dbHelper = DBHelper();
+
+  // Call the getAllUsers function
+  List<UserModel> users = await dbHelper.getAllUsers();
+
+  // Print the contents of each user
+  for (UserModel user in users) {
+    print('User ID: ${user.id}');
+    print('Email: ${user.email}');
+    print('Password: ${user.password}');
+    // Add more fields if needed
+
+    print('---'); // Separator between users
+  }
   runApp(const MyApp());
 }
 

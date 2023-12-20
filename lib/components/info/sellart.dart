@@ -54,14 +54,17 @@ class _SellArtSectionState extends State<SellArtSection> {
           height: 20,
         ),
         Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Sell art from your colection",
-                  style: TextStyle(fontSize: 25),
+                  style: TextStyle(fontSize: 40),
                   overflow: TextOverflow.clip,
+                ),
+                SizedBox(
+                  height: 8,
                 ),
                 Text(
                   "With our global reach and art market expertise, our specialists will find the best sales option for your worrk.",
@@ -85,7 +88,7 @@ class _SellArtSectionState extends State<SellArtSection> {
                     // );
                   },
                   style: ElevatedButton.styleFrom(
-                    fixedSize: Size(330, 50),
+                    fixedSize: Size(350, 50),
                     primary: Colors.black,
                     onPrimary: Colors.white,
                     shape: RoundedRectangleBorder(
@@ -114,7 +117,7 @@ class _SellArtSectionState extends State<SellArtSection> {
                     // );
                   },
                   style: OutlinedButton.styleFrom(
-                    fixedSize: Size(330, 50),
+                    fixedSize: Size(350, 50),
                     side: BorderSide(color: Colors.black),
                     primary: Colors.black,
                     backgroundColor: Colors.white,
@@ -126,6 +129,9 @@ class _SellArtSectionState extends State<SellArtSection> {
                     "Get in Touch",
                     style: TextStyle(fontSize: 16),
                   ),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
               ],
             ))
