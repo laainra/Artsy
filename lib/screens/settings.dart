@@ -23,7 +23,7 @@ class _SettingsState extends State<Settings> {
           child: Text(
             "<",
             style: TextStyle(
-              fontSize: 30,
+              fontSize: 35,
               color: Colors.black,
               fontWeight: FontWeight.w100,
             ),
@@ -39,13 +39,18 @@ class _SettingsState extends State<Settings> {
         children: [
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Edit Profile",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Edit Profile",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/edit-profileP');
+                  },
                 ),
                 Text(">"),
               ],
@@ -54,7 +59,7 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -74,13 +79,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Saved Alerts",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Saved Alerts",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -89,13 +99,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Follows",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Follows",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -104,13 +119,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Order History",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Order History",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -119,13 +139,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Payment",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Payment",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -134,13 +159,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Push Notifications",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Push Notifications",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -149,13 +179,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Send Feedback",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Send Feedback",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -164,13 +199,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Personal Data Request",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    " Personal Data Request",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -179,13 +219,18 @@ class _SettingsState extends State<Settings> {
           Divider(),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 30,
+            height: 35,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "About",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "About",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
@@ -208,7 +253,7 @@ class _SettingsState extends State<Settings> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(35.0),
               ),
               minimumSize: Size(350, 45),
             ),

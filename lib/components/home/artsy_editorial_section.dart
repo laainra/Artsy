@@ -164,13 +164,13 @@ class EditorialSectionState extends State<EditorialSection> {
                             Image.asset(
                               articles[index]['image'][0],
                               height: 250,
-                              width: 70,
+                              width: 125,
                               fit: BoxFit.cover,
                             ),
                             Image.asset(
-                              articles[index]['image'][0],
+                              articles[index]['image'][1],
                               height: 250,
-                              width: 70,
+                              width: 125,
                               fit: BoxFit.cover,
                             ),
                           ],
@@ -199,7 +199,8 @@ class EditorialSectionState extends State<EditorialSection> {
                             ),
                             Text(
                               articles[index]['created_at'],
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
                         ),

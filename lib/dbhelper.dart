@@ -26,6 +26,7 @@ class DBHelper {
   static const String editorialTable = 'editorials';
   static const String likeTable = 'likes';
   static const String transactionTable = 'transactions';
+  static const String createdAtColumn = 'createdAt';
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -62,7 +63,7 @@ class DBHelper {
           profession TEXT,
           positions TEXT,
           about TEXT,
-          createdAt TEXT
+          $createdAtColumn TEXT
         )
       ''');
 
@@ -269,15 +270,20 @@ class DBHelper {
   }
 
 // Insert a user into the database
-  Future<void> insertUser(UserModel user) async {
-    try {
-      final db = await database;
-      await db.insert(userTable, user.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    } catch (e) {
-      print('Error inserting user: $e');
-    }
+Future<void> insertUser(UserModel user) async {
+  try {
+    final db = await database;
+
+    // Add createdAt field with the current date and time
+    final createdAt = DateTime.now().toIso8601String();
+    final userMap = user.toMap()..['createdAt'] = createdAt;
+
+    await db.insert(userTable, userMap, conflictAlgorithm: ConflictAlgorithm.replace);
+  } catch (e) {
+    print('Error inserting user: $e');
   }
+}
+
 
   // Retrieve a user by ID from the database
   Future<UserModel?> getUser(int id) async {

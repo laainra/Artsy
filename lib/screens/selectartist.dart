@@ -1,3 +1,5 @@
+import 'package:flutter/gestures.dart';
+import 'package:artsy_prj/screens/addartwork.dart';
 import 'package:flutter/material.dart';
 
 class SelectArtist extends StatefulWidget {
@@ -59,19 +61,12 @@ class _SelectArtistState extends State<SelectArtist> {
         elevation: 0.0,
         backgroundColor: Colors.white,
         title: Text(
-          "Edit Profile",
+          "Select Artist",
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
-        leading: TextButton(
-          child: Text(
-            "<",
-            style: TextStyle(
-              fontSize: 30,
-              color: Colors.black,
-              fontWeight: FontWeight.w100,
-            ),
-          ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -80,12 +75,12 @@ class _SelectArtistState extends State<SelectArtist> {
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
+          // Search bar
           Container(
             margin: EdgeInsets.only(top: 15),
             height: 50,
             decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(_searchFocusNode.hasFocus ? 2 : 2),
+              borderRadius: BorderRadius.circular(2),
               border: Border.all(color: Colors.grey),
             ),
             child: Stack(
@@ -131,25 +126,55 @@ class _SelectArtistState extends State<SelectArtist> {
             ),
           ),
           RichText(
-              text: TextSpan(style: TextStyle(color: Colors.grey), children: [
-            TextSpan(text: "Can't find the artist?"),
-            TextSpan(
-                text: "Add their name",
-                style: TextStyle(decoration: TextDecoration.underline)),
-          ])),
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Icon(Icons.person_outline, color: Colors.white),
+            overflow: TextOverflow.clip,
+            text: TextSpan(
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15,
               ),
-              Text("Nama Artist")
-            ],
+              children: [
+                TextSpan(
+                  text: "Can't find the artist? '",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                TextSpan(
+                  text: "Add their name",
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey,
+                    decoration: TextDecoration.underline,
+                    // fontWeight: FontWeight.bold
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      Navigator.pushNamed(context, '/add-artist');
+                    },
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 20),
+          // List of artists
+          Column(
+            children: trendingArtists.map((artist) {
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: AssetImage(artist['image']),
+                ),
+                title: Text(artist['name']),
+                subtitle:
+                    Text("${artist['nationality']} - ${artist['birthYear']}"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddArtworks(artist: artist),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
           ),
         ],
       ),

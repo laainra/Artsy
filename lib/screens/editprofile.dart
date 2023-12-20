@@ -20,6 +20,7 @@ class _EditProfileState extends State<EditProfile> {
     return Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
@@ -75,7 +76,8 @@ class _EditProfileState extends State<EditProfile> {
         body: SingleChildScrollView(
           padding: EdgeInsets.all(10),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
                 children: [
@@ -84,7 +86,7 @@ class _EditProfileState extends State<EditProfile> {
                     height: 90,
                     decoration: BoxDecoration(
                       color: Colors.grey,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(180),
                     ),
                     child: Icon(Icons.person_outline, color: Colors.white),
                   ),
@@ -101,6 +103,9 @@ class _EditProfileState extends State<EditProfile> {
                     },
                   )
                 ],
+              ),
+              SizedBox(
+                height: 20,
               ),
               buildTextField(
                   "FULL NAME", "Enter Full Name", nameController, isHintFilled),
@@ -159,10 +164,10 @@ class _EditProfileState extends State<EditProfile> {
                   ),
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(180.0),
-                  side: BorderSide(color: Colors.grey),
-                ),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.circular(180.0),
+                //   side: BorderSide(color: Colors.grey),
+                // ),
                 value: checkVerifyId,
                 onChanged: (value) {
                   setState(() {
@@ -174,24 +179,73 @@ class _EditProfileState extends State<EditProfile> {
               CheckboxListTile(
                 checkColor: Colors.white,
                 activeColor: Colors.black,
-                title: Text(
-                  "Verify Your Email           Secure your acount and receive updates about your transactions on Artsy",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: checkVerifyEmail ? Colors.grey : Colors.black,
+                title: RichText(
+                  overflow: TextOverflow.clip,
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Verify Your Email ",
+                        style: TextStyle(
+                            fontSize: 15,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                          text:
+                              ' Secure your acount and receive updates about your transactions on Artsy ',
+                          style: TextStyle(
+                              color: checkVerifyEmail
+                                  ? Colors.grey
+                                  : Colors.black)),
+                    ],
                   ),
                 ),
+
                 controlAffinity: ListTileControlAffinity.leading,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(180.0),
-                  side: BorderSide(color: Colors.grey),
-                ),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.circular(180.0),
+                //   side: BorderSide(color: Colors.grey),
+                // ),
                 value: checkVerifyEmail,
                 onChanged: (value) {
                   setState(() {
                     checkVerifyEmail = value!;
                   });
                 },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Call the callback function to pass shipping information
+                  // widget.onSavePayment(paymentInfo);
+                  //                     Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => ReviewPage(
+                  //       shipping: widget.shipping,
+                  //       artwork: widget.artwork,
+                  //       payment: paymentInfo
+                  //     ),
+                  //   ),
+                  // );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  minimumSize: Size(350, 45),
+                ),
+                child: Text(
+                  "Save",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
               ),
             ],
           ),

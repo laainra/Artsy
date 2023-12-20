@@ -25,6 +25,7 @@ class _AddArtistState extends State<AddArtist> {
                   label,
                   style: TextStyle(fontSize: 13),
                 ),
+                SizedBox(width: 8),
                 if (isRequired)
                   Text(
                     "Required",
@@ -58,7 +59,7 @@ class _AddArtistState extends State<AddArtist> {
           elevation: 0.0,
           backgroundColor: Colors.white,
           title: Text(
-            "Edit Profile",
+            "Add Artist",
             style: TextStyle(color: Colors.black),
           ),
           centerTitle: true,
@@ -80,7 +81,7 @@ class _AddArtistState extends State<AddArtist> {
         body: SingleChildScrollView(
           padding: EdgeInsets.all(10),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
                 children: [
@@ -89,7 +90,7 @@ class _AddArtistState extends State<AddArtist> {
                     height: 90,
                     decoration: BoxDecoration(
                       color: Colors.grey,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(180),
                     ),
                     child: Icon(Icons.person_outline, color: Colors.white),
                   ),
@@ -107,17 +108,26 @@ class _AddArtistState extends State<AddArtist> {
                   )
                 ],
               ),
+              SizedBox(
+                height: 20,
+              ),
               buildTextField(
-                  "ARTIST NAME", "Artist Name", nameController, true, 320),
+                  "ARTIST NAME", "Artist Name", nameController, true, 370),
               buildTextField("NATIONALITY", "Nationality",
-                  nationalityController, false, 320),
+                  nationalityController, false, 370),
               Row(
                 children: [
                   buildTextField("BIRTH YEAR", "Birth Year",
-                      birthyearController, false, 170),
+                      birthyearController, false, 180),
+                  SizedBox(
+                    width: 10,
+                  ),
                   buildTextField("DEATH YEAR", "Death Year",
-                      deathyearController, false, 170),
+                      deathyearController, false, 180),
                 ],
+              ),
+              SizedBox(
+                height: 10,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -139,7 +149,7 @@ class _AddArtistState extends State<AddArtist> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  minimumSize: Size(350, 45),
+                  minimumSize: Size(370, 45),
                 ),
                 child: Text(
                   "Add Artist",

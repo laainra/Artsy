@@ -20,7 +20,7 @@ class _SavesTabState extends State<SavesTab> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 217, 207, 207),
+                    color: Color.fromARGB(255, 235, 233, 233),
                     border: Border.all(
                         color: Colors.black, width: 1), // Border added here
                   ),
@@ -30,9 +30,8 @@ class _SavesTabState extends State<SavesTab> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 217, 207, 207),
-                    border: Border.all(
-                        color: Colors.black, width: 1),
+                    color: Color.fromARGB(255, 235, 233, 233),
+                    border: Border.all(color: Colors.black, width: 1),
                   ),
                   child: Icon(Icons.browser_not_supported_outlined),
                 )
@@ -44,7 +43,7 @@ class _SavesTabState extends State<SavesTab> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 217, 207, 207),
+                    color: Color.fromARGB(255, 235, 233, 233),
                     border: Border.all(
                         color: Colors.black, width: 1), // Border added here
                   ),
@@ -54,7 +53,7 @@ class _SavesTabState extends State<SavesTab> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 217, 207, 207),
+                    color: Color.fromARGB(255, 235, 233, 233),
                     border: Border.all(
                         color: Colors.black, width: 1), // Border added here
                   ),
