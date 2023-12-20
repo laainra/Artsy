@@ -307,25 +307,23 @@ class DBHelper {
     return res.isNotEmpty;
   }
 
-  // Retrieve all users from the database
-// Retrieve all users from the database
-Future<List<UserModel>> getAllUsers() async {
-  try {
-    final db = await database;
-    final List<Map<String, dynamic>> maps =
-        await db.rawQuery("SELECT * from users");
+  Future<List<UserModel>> getAllUsers() async {
+    try {
+      final db = await database;
+      final List<Map<String, dynamic>> maps =
+          await db.rawQuery("SELECT * from users");
 
-    // Convert the list of maps into a list of UserModel objects
-    List<UserModel> users = List.generate(maps.length, (i) {
-      return UserModel.fromMap(maps[i]);
-    });
+      // Convert the list of maps into a list of UserModel objects
+      List<UserModel> users = List.generate(maps.length, (i) {
+        return UserModel.fromMap(maps[i]);
+      });
 
-    return users;
-  } catch (e) {
-    print('Error retrieving all users: $e');
-    return [];
+      return users;
+    } catch (e) {
+      print('Error retrieving all users: $e');
+      return [];
+    }
   }
-}
 
   // Update a user in the database
   Future<void> updateUser(UserModel user) async {
@@ -359,7 +357,6 @@ Future<List<UserModel>> getAllUsers() async {
     }
   }
 
-  // Retrieve an artist by ID from the database
   Future<ArtistModel?> getArtist(int id) async {
     try {
       final db = await database;
@@ -377,7 +374,6 @@ Future<List<UserModel>> getAllUsers() async {
     }
   }
 
-  // Retrieve all artists from the database
   Future<List<Map<String, dynamic>>> getAllArtists() async {
     try {
       final db = await database;
@@ -388,7 +384,6 @@ Future<List<UserModel>> getAllUsers() async {
     }
   }
 
-  // Update an artist in the database
   Future<void> updateArtist(ArtistModel artist) async {
     try {
       final db = await database;
@@ -399,7 +394,6 @@ Future<List<UserModel>> getAllUsers() async {
     }
   }
 
-  // Delete an artist by ID from the database
   Future<void> deleteArtist(int id) async {
     try {
       final db = await database;
@@ -409,7 +403,6 @@ Future<List<UserModel>> getAllUsers() async {
     }
   }
 
-  // Insert an artwork into the database
   Future<void> insertArtwork(ArtworkModel artwork) async {
     try {
       final db = await database;

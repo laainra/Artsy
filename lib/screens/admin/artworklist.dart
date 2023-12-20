@@ -304,7 +304,7 @@ Future<void> getFilePicker() async {
                 ),
                 SizedBox(height: 16.0),
 
-                // Rarity Dropdown
+                
                 DropdownButtonFormField<String>(
                   value: selectedRarity,
                   hint: Text('Select Rarity'),

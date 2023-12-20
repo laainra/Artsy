@@ -58,9 +58,14 @@ class _SettingsState extends State<Settings> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Account Settings",
-                  style: TextStyle(fontSize: 17),
+                TextButton(
+                  child: Text(
+                    "Account Settings",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/account-settings');
+                  },
                 ),
                 Text(">"),
               ],
