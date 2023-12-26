@@ -1,7 +1,10 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
 class AccountSettings extends StatefulWidget {
-  const AccountSettings({Key? key}) : super(key: key);
+  final UserModel user;
+
+  const AccountSettings({Key? key, required this.user}) : super(key: key);
   @override
   _AccountSettingsState createState() => _AccountSettingsState();
 }
@@ -49,7 +52,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 ),
                 Row(
                   children: [
-                    Text('account@gmail.com',
+                    Text(widget.user.email!,
                         style: TextStyle(
                             color: Colors
                                 .grey)), // place actual account from database

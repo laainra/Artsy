@@ -56,7 +56,7 @@ class _WireFormState extends State<WireForm> {
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + widget.artwork["harga"]),
+            Text("Price " + widget.artwork["price"]),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -69,7 +69,7 @@ class _WireFormState extends State<WireForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text(widget.artwork["harga"],
+                  child: Text(widget.artwork["price"],
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(height: 10),
@@ -234,13 +234,12 @@ class _WireFormState extends State<WireForm> {
                 SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
-                     String selectedPaymentMethod = "Wire Transfer";
+                    String selectedPaymentMethod = "Wire Transfer";
                     // Call the callback function to pass shipping information
                     PaymentInfo paymentInfo = PaymentInfo(
                         // fullName: fullNameController.text,
                         // email: widget.user.email,
-                        paymentMethod: selectedPaymentMethod
-                        );
+                        paymentMethod: selectedPaymentMethod);
                     // widget.onSaveAndContinue(paymentInfo)
                     widget.onSavePayment(paymentInfo);
 

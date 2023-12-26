@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/screens/payment.dart';
+import 'dart:io';
 
 class DetailArtworkPage extends StatefulWidget {
   final Map<String, dynamic> artworkDetails;
@@ -101,16 +102,24 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                                   currentPage = index.toDouble();
                                 });
                               },
-                              children: (widget.artworkDetails['image']
-                                      as List<String>)
-                                  .map((imageUrl) {
-                                return Image.asset(
-                                  imageUrl,
-                                  fit: BoxFit.cover,
-                                  width: 200,
-                                  height: 200,
-                                );
-                              }).toList(),
+                              children: [
+                                widget.artworkDetails['photos'] != null
+                                    ? widget.artworkDetails['photos']
+                                            .startsWith('assets/images')
+                                        ? Image.asset(
+                                            widget.artworkDetails['photos'],
+                                            height: 120,
+                                          )
+                                        : Image.file(
+                                            File(widget
+                                                .artworkDetails['photos']),
+                                            height: 120,
+                                          )
+                                    : Image.asset(
+                                        'assets/images/art1.png',
+                                        height: 120,
+                                      )
+                              ],
                             ),
                           ),
                           // Page indicators
@@ -142,7 +151,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  widget.artworkDetails['artist'] +
+                  widget.artworkDetails['artistName'] +
                       ", " +
                       widget.artworkDetails['year'].toString(),
                   style: TextStyle(fontSize: 16, color: Colors.black),
@@ -317,7 +326,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.artworkDetails['artist'],
+                            widget.artworkDetails['artistName'],
                             style: TextStyle(fontSize: 14),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -355,7 +364,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                 ),
                 SizedBox(height: 10),
                 Text("Want to sell a work by " +
-                    widget.artworkDetails['artist'] +
+                    widget.artworkDetails['artistName'] +
                     '?'),
                 Text(
                   "Consign with Artsy",
@@ -386,7 +395,8 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                       ),
                       Column(
                         children: [
-                          Text(widget.artworkDetails['gallery']),
+                          Text(widget.artworkDetails['galleryName'] ??
+                              'Unknown Gallery'),
                           Text(
                             "Gallery Location",
                             style: TextStyle(color: Colors.grey, fontSize: 12),
@@ -421,9 +431,28 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                               style: TextStyle(fontSize: 12)),
                         ),
                       ],
-                    )
+                    ),
                   ],
-                )
+                ),
+                const SizedBox(height: 20),
+                const Divider(
+                  color: Colors.black,
+                ),
+                SizedBox(height: 20),
+                Text("Shipping and taxes",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w600, fontSize: 28)),
+                Text(
+                  "Taxes may apply at ckeckout. Ships from Indonesia",
+                  overflow: TextOverflow.clip,
+                ),
+                Text("Shipping USD10 within Indonesia, USD160 rest of world.",
+                    overflow: TextOverflow.clip),
+                Text("VAT included in price"),
+                const SizedBox(height: 20),
+                const Divider(
+                  color: Colors.black,
+                ),
               ],
             ),
           ),
@@ -440,7 +469,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 25),
                   child: Text(
-                    widget.artworkDetails['harga'],
+                    widget.artworkDetails['price'],
                     textAlign: TextAlign.left,
                     style: TextStyle(color: Colors.black, fontSize: 28),
                   ),
@@ -448,7 +477,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 25),
                   child: Text(
-                    "excl. Shipping and TAxes",
+                    "excl. Shipping and Taxes",
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         color: const Color.fromARGB(255, 98, 96, 96),

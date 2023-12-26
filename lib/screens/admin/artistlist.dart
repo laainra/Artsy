@@ -212,19 +212,44 @@ class _ArtistListState extends State<ArtistList> {
         itemCount: artist.length,
         itemBuilder: (context, index) {
           final currentArtist = artist[index];
-          final imagePath = currentArtist["photo"] ?? '';
-          final imageFile = File(imagePath);
+          final imagePath = currentArtist["photo"] ??
+              ''; // Assuming "photo" contains the image path
+
+          Widget leadingWidget;
+
+          if (imagePath.isNotEmpty) {
+            final imageFile = File(imagePath);
+
+            if (imageFile.existsSync()) {
+              leadingWidget = Image.file(
+                imageFile,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              );
+            } else {
+              print('File does not exist: $imagePath');
+              // Handle the case where the file doesn't exist, you might want to provide a default image or show an error icon
+              leadingWidget = Icon(Icons.error, size: 50);
+            }
+          } else {
+            // Assuming "photo" is an asset path if not a file path
+            try {
+              leadingWidget = Image.asset(
+                imagePath,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              );
+            } catch (e) {
+              print('Error loading asset: $imagePath');
+              // Handle the case where the asset can't be loaded, you might want to provide a default image or show an error icon
+              leadingWidget = Icon(Icons.error, size: 50);
+            }
+          }
 
           return ListTile(
-            leading: imageFile.existsSync() // Check if the file exists
-                ? Image.file(
-                    imageFile,
-                    width: 50, // Set the desired width
-                    height: 50, // Set the desired height
-                    fit: BoxFit.cover,
-                  )
-                : FlutterLogo(
-                    size: 50), // Replace with your default image or widget
+            leading: leadingWidget, // Replace with your default image or widget
             title: Text(currentArtist["name"] ?? ''),
             subtitle: Text('b. ${currentArtist["birthYear"]}' ?? ''),
             trailing: SizedBox(

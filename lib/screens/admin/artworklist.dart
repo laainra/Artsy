@@ -34,8 +34,8 @@ class _ArtworkListState extends State<ArtworkListPage> {
   int? selectedArtist;
   String? selectedRarity;
   String? selectedMedium;
-  List<String> selectedPhotos = [];
-  List<String> photos = [];
+  String? selectedPhotos = '';
+  String? photos = '';
 
   List<String> galleries = ['Gallery A', 'Gallery B', 'Gallery C'];
   List<String> artists = ['Artist A', 'Artist B', 'Artist C'];
@@ -119,33 +119,39 @@ class _ArtworkListState extends State<ArtworkListPage> {
     }
   }
 
-Future<void> getFilePicker() async {
-  FilePickerResult? result = await FilePicker.platform.pickFiles(
-    type: FileType.custom,
-    allowMultiple: true,  // Enable multiple file selection
-    allowedExtensions: ['jpg', 'png', 'webm'],
-  );
+  Future<String> getFilePicker() async {
+    //
+    // Fungsi untuk memilih file
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      // Menampilkan dialog pemilih file
+      type: FileType.custom, // Menentukan tipe file yang diizinkan
+      allowedExtensions: [
+        'jpg',
+        'png',
+        'webm'
+      ], // Menentukan ekstensi file yang diizinkan
+    );
 
-  if (result != null) {
-    for (PlatformFile file in result.files) {
-      final destination = await getExternalStorageDirectory();
-      File? destinationFile =
-          File('${destination!.path}/${file.name.hashCode}');
-      final newFile = File(file.path!).copy(destinationFile!.path);
-      selectedPhotos.add(destinationFile.path);
-      File(file.path!).delete();
+    if (result != null) {
+      // Jika file dipilih
+      PlatformFile sourceFile =
+          result.files.first; // Mengambil file pertama dari hasil pemilihan
+      final destination =
+          await getExternalStorageDirectory(); // Mendapatkan direktori penyimpanan eksternal
+      File? destinationFile = File(
+          '${destination!.path}/${sourceFile.name.hashCode}'); // Menentukan path tujuan file
+      final newFile = File(sourceFile.path!)
+          .copy(destinationFile!.path); // Menyalin file ke lokasi tujuan
+      setState(() {
+        photos =
+            destinationFile.path; // Memperbarui path foto dengan path tujuan
+      });
+      File(sourceFile.path!).delete(); // Menghapus file sumber setelah disalin
+      return destinationFile.path; // Mengembalikan path tujuan
+    } else {
+      return "Dokumen belum diupload"; // Mengembalikan pesan jika dokumen belum diupload
     }
-
-    setState(() {
-      
-      photos = [selectedPhotos.join(", ")] ?? [];
- // Save multiple paths as a comma-separated string
-    });
-  } else {
-    showSnackBar("No photos selected!");
   }
-}
-
 
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +181,7 @@ Future<void> getFilePicker() async {
       selectedArtist = null;
       selectedRarity = null;
       selectedMedium = null;
-      photos.clear();
+      photos = null;
     });
   }
 
@@ -217,11 +223,13 @@ Future<void> getFilePicker() async {
                 ),
                 TextField(
                   controller: materialsController,
-                  decoration: const InputDecoration(hintText: "Materials"),
+                  decoration: const InputDecoration(hintText: "Materials "),
                 ),
                 TextField(
                   controller: provenanceController,
-                  decoration: const InputDecoration(hintText: "Provenance"),
+                  maxLength: null,
+                  decoration: const InputDecoration(
+                      hintText: "Provenance (how artwork is acquired)"),
                 ),
                 TextField(
                   controller: locationController,
@@ -229,7 +237,10 @@ Future<void> getFilePicker() async {
                 ),
                 TextField(
                   controller: notesController,
-                  decoration: const InputDecoration(hintText: "Notes"),
+                  maxLength: null,
+                  decoration: const InputDecoration(
+                    hintText: "Notes",
+                  ),
                 ),
                 TextField(
                   controller: conditionController,
@@ -237,11 +248,13 @@ Future<void> getFilePicker() async {
                 ),
                 TextField(
                   controller: frameController,
-                  decoration: const InputDecoration(hintText: "Frame"),
+                  decoration: const InputDecoration(
+                      hintText: "Frame (Included or not)"),
                 ),
                 TextField(
                   controller: certificateController,
-                  decoration: const InputDecoration(hintText: "Certificate"),
+                  decoration: const InputDecoration(
+                      hintText: "Certificate of Authenticity"),
                 ),
                 TextField(
                   controller: yearController,
@@ -251,24 +264,23 @@ Future<void> getFilePicker() async {
                 TextField(
                   controller: heightController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(hintText: "Height"),
+                  decoration: const InputDecoration(hintText: "Height in cm"),
                 ),
                 TextField(
                   controller: widthController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(hintText: "Width"),
+                  decoration: const InputDecoration(hintText: "Width in cm"),
                 ),
                 TextField(
                   controller: depthController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(hintText: "Depth"),
+                  decoration: const InputDecoration(hintText: "Depth in cm"),
                 ),
                 TextField(
                   controller: priceController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(hintText: "Price"),
+                  decoration: const InputDecoration(hintText: "Price in USD"),
                 ),
-                // Artist Dropdown
                 DropdownButtonFormField<int>(
                   value: selectedArtist,
                   hint: Text('Select Artist'),
@@ -285,8 +297,6 @@ Future<void> getFilePicker() async {
                   }).toList(),
                 ),
                 SizedBox(height: 16.0),
-
-                // Gallery Dropdown
                 DropdownButtonFormField<int>(
                   value: selectedGallery,
                   hint: Text('Select Gallery'),
@@ -303,8 +313,6 @@ Future<void> getFilePicker() async {
                   }).toList(),
                 ),
                 SizedBox(height: 16.0),
-
-                
                 DropdownButtonFormField<String>(
                   value: selectedRarity,
                   hint: Text('Select Rarity'),
@@ -321,8 +329,6 @@ Future<void> getFilePicker() async {
                   }).toList(),
                 ),
                 SizedBox(height: 16.0),
-
-                // Medium Dropdown
                 DropdownButtonFormField<String>(
                   value: selectedMedium,
                   hint: Text('Select Medium'),
@@ -339,7 +345,6 @@ Future<void> getFilePicker() async {
                   }).toList(),
                 ),
                 SizedBox(height: 16.0),
-
                 ElevatedButton(
                   onPressed: () async {
                     getFilePicker();
@@ -354,7 +359,7 @@ Future<void> getFilePicker() async {
                 ElevatedButton(
                   onPressed: () async {
                     if (id != null) {
-                      List<String>? photoartwork = photos;
+                      String? photoartwork = photos;
                       final data = ArtworkModel(
                         id: id,
                         title: titleController.text,
@@ -383,7 +388,7 @@ Future<void> getFilePicker() async {
                       refreshData();
                       showSnackBar("Update successful");
                     } else {
-                      List<String>? photoartwork = photos;
+                      String? photoartwork = photos;
                       final data = ArtworkModel(
                         title: titleController.text,
                         materials: materialsController.text,
@@ -422,6 +427,39 @@ Future<void> getFilePicker() async {
     );
   }
 
+  Widget buildLeadingWidget(String? photos) {
+    if (photos != null) {
+      if (photos.startsWith('http')) {
+        // It's a network URL
+        return Image.network(
+          photos,
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Handle error when loading image from network
+            print('Error loading image from network: $error');
+            return FlutterLogo(size: 50);
+          },
+        );
+      } else {
+        // It's a local file path
+        final imageFile = File(photos);
+        return imageFile.existsSync()
+            ? Image.file(
+                imageFile,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              )
+            : FlutterLogo(size: 50);
+      }
+    } else {
+      // If no photo is available, show a placeholder (e.g., FlutterLogo)
+      return FlutterLogo(size: 50);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -448,12 +486,10 @@ Future<void> getFilePicker() async {
         itemCount: artwork.length,
         itemBuilder: (context, index) {
           final currentArtwork = artwork[index];
-          List<String> photos = (currentArtwork["photos"] as String).split(", ");
+          Widget leadingWidget = buildLeadingWidget(currentArtwork["photos"]);
           return Container(
             child: ListTile(
-              leading: currentArtwork["photos"] != null
-                  ? Image.file(File(photos[0]))
-                  : FlutterLogo(),
+              leading: leadingWidget,
               title: Text(currentArtwork["title"] ?? ''),
               subtitle: Text('Year: ${currentArtwork["year"]}' ?? ''),
               trailing: SizedBox(

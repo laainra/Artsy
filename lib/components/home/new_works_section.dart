@@ -1,7 +1,9 @@
+import 'package:artsy_prj/screens/artworks.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/dbhelper.dart'; // Import your DBHelper class
 import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
+import 'dart:io';
 
 class NewWorksSection extends StatefulWidget {
   @override
@@ -12,65 +14,68 @@ class NewWorksSectionState extends State<NewWorksSection> {
   final List<Map<String, dynamic>> artItems = [
     {
       'title': 'Ndebele Pattern',
-      'artist': 'Esther Mahlangu',
-      'year': 2021, // Change from "2021" to 2021
-      'gallery': 'Tumo Gallery',
-      'image': ['assets/images/art1.png','assets/images/art2.png','assets/images/art1.png'],
-      'harga': '€3,300',
+      'artistName': 'Esther Mahlangu',
+      'year': 2021,
+      'galleryName': 'Tumo Gallery',
+      'photos': 'assets/images/art1.png',
+      'price': '€3,300',
     },
     {
       'title': 'Sally',
-      'artist': 'Ginny Casey',
+      'artistName': 'Ginny Casey',
       'year': 2023, // Change from "2023" to 2023
-      'gallery': 'Half Gallery',
-      'image': ['assets/images/art2.png','assets/images/art2.png','assets/images/art1.png'],
-      'harga': 'USD16,000',
+      'galleryName': 'Half Gallery',
+      'photos': 'assets/images/art2.png',
+      'price': 'USD16,000',
     },
     {
       'title': 'Strength?',
-      'artist': 'Kevin Claiborne',
+      'artistName': 'Kevin Claiborne',
       'year': 2023, // Change from "2023" to 2023
-      'gallery': 'WORTHLESSSTUDIOS Benefit Auction',
-      'image': ['assets/images/art3.png','assets/images/art2.png','assets/images/art1.png'],
-      'harga': 'USD3,500',
+      'galleryName': 'WORTHLESSSTUDIOS Benefit Auction',
+      'photos': 'assets/images/art3.png',
+
+      'price': 'USD3,500',
     },
     {
       'title': 'Dancing Among the Flowers',
-      'artist': 'Eric Alfaro',
+      'artistName': 'Eric Alfaro',
       'year': 2023, // Change from "2023" to 2023
-      'gallery': 'Carousel Fine Art',
-      'image': ['assets/images/art4.png','assets/images/art2.png','assets/images/art1.png'],
-      'harga': 'USD12,500',
+      'galleryName': 'Carousel Fine Art',
+      'photos': 'assets/images/art4.png',
+
+      'price': 'USD12,500',
     },
     {
       'title': 'The Moment That Things Start to Change',
-      'artist': 'Yusuf Epçin',
+      'artistName': 'Yusuf Epçin',
       'year': 2023, // Change from "2023" to 2023
-      'gallery': 'The Artchi Gallery',
-      'image':['assets/images/art5.png','assets/images/art2.png','assets/images/art1.png'],
-      'harga': '£1,200',
+      'galleryName': 'The Artchi Gallery',
+      'photos': 'assets/images/art5.png',
+
+      'price': '£1,200',
     },
   ];
 
-    @override
-  // void initState() {
-  //   super.initState();
-  //   // Fetch artwork data from the database when the widget initializes
-  //   fetchArtworkData();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // Fetch artwork data from the database when the widget initializes
+    fetchArtworkData();
+  }
 
-// void fetchArtworkData() async {
-//   var dbHelper = DBHelper();
-  
-//   // Fetch artwork data with artist and gallery names using a join operation
-//   final artworkData = await dbHelper.getAllArtworksWithDetails();
+  void fetchArtworkData() async {
+    var dbHelper = DBHelper();
 
-//   // Update the state with the fetched artwork data
-//   setState(() {
-//     artItems.clear();
-//     artItems.addAll(artworkData);
-//   });
-// }
+    // Fetch artwork data with artistName and galleryName names using a join operation
+    final artworkData = await dbHelper.getAllArtworksWithDetails();
+
+    // Update the state with the fetched artwork data
+    setState(() {
+      // artItems.clear();
+      artItems.addAll(artworkData);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,90 +84,126 @@ class NewWorksSectionState extends State<NewWorksSection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "New Works for You",
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              ">", // Change from "<" to ">"
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
-            )
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ArtworksPage(
+                        artworks: artItems,
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  "New Works for You",
+                  style: TextStyle(fontSize: 16),
+                )),
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ArtworksPage(
+                        artworks: artItems,
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  ">",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
+                )),
           ],
         ),
         SizedBox(height: 15),
         Container(
           height: 410,
           child: ListView.builder(
-  scrollDirection: Axis.horizontal,
-  itemCount: artItems.length,
-  itemBuilder: (context, index) {
-    return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailArtworkPage(
-                  artworkDetails: artItems[index],
-                ),
-              ),
-            );
-          },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-        ),
-        width: 250,
-        margin: EdgeInsets.all(8),
-        child: Container(
-          child: Column(
-            children: [
-              Image.asset(
-                artItems[index]['image'][0],
-                height: 250,
-              ),
-              SizedBox(height: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        artItems[index]['artist'],
-                        style: TextStyle(fontSize: 13),
+            scrollDirection: Axis.horizontal,
+            itemCount: artItems.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailArtworkPage(
+                        artworkDetails: artItems[index],
                       ),
-                      Icon(Icons.favorite_border)
-                    ],
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                   ),
-                  Text(
-                    '${artItems[index]['title']}, ${artItems[index]['year']}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                      color: Color.fromARGB(121, 23, 22, 22),
+                  width: 250,
+                  margin: EdgeInsets.all(8),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Center(
+                          child: artItems[index]['photos'] != null
+                              ? artItems[index]['photos']
+                                      .startsWith('assets/images')
+                                  ? Image.asset(
+                                      artItems[index]['photos'],
+                                      height: 250,
+                                    )
+                                  : Image.file(
+                                      File(artItems[index]['photos']),
+                                      height: 250,
+                                    )
+                              : Image.asset(
+                                      'assets/images/art1.png',
+                                      height: 250,
+                                    )
+                        ),
+                        SizedBox(height: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  artItems[index]['artistName'] ??
+                                      'Unknown Artist',
+                                  style: TextStyle(fontSize: 13),
+                                ),
+                                Icon(Icons.favorite_border)
+                              ],
+                            ),
+                            Text(
+                              '${artItems[index]['title']}, ${artItems[index]['year']}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                                color: Color.fromARGB(121, 23, 22, 22),
+                              ),
+                            ),
+                            Text(
+                              artItems[index]['galleryName'] ??
+                                  'Unknown Gallery',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color.fromARGB(121, 23, 22, 22),
+                              ),
+                            ),
+                            Text(
+                              artItems[index]['price'],
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    artItems[index]['gallery'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color.fromARGB(121, 23, 22, 22),
-                    ),
-                  ),
-                  Text(
-                    artItems[index]['harga'],
-                    style: TextStyle(fontSize: 12),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              );
+            },
           ),
-        ),
-      ),
-    );
-  },
-),
-
         ),
       ],
     );

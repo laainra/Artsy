@@ -1,7 +1,13 @@
+import 'package:artsy_prj/controller/auth.dart';
+import 'package:artsy_prj/model/usermodel.dart';
+import 'package:artsy_prj/screens/accountsetting.dart';
+import 'package:artsy_prj/screens/editprofile.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({Key? key}) : super(key: key);
+  final UserModel user;
+
+  const Settings({Key? key, required this.user}) : super(key: key);
   @override
   _SettingsState createState() => _SettingsState();
 }
@@ -49,7 +55,14 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/edit-profileP');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfile(
+                          user: widget.user,
+                        ),
+                      ),
+                    );
                   },
                 ),
                 Text(">"),
@@ -69,7 +82,13 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AccountSettings(user: widget.user),
+                      ),
+                    );
                   },
                 ),
                 Text(">"),
@@ -239,16 +258,10 @@ class _SettingsState extends State<Settings> {
           Divider(),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/');
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => PaymentSuccessPage(
-              //             shipping: shipping,
-              //             artwork: artwork,
-              //             payment: payment,
-              //           )),
-              // );
+              // Tambahkan logika logout di sini
+              Auth.logout();
+              // Navigasi kembali ke halaman login
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,

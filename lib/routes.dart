@@ -1,6 +1,7 @@
 import 'package:artsy_prj/screens/accountsetting.dart';
 import 'package:artsy_prj/screens/addartist.dart';
 import 'package:artsy_prj/screens/addartwork.dart';
+import 'package:artsy_prj/screens/admin/editoriallist.dart';
 import 'package:artsy_prj/screens/admin/gallerylist.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
 import 'package:artsy_prj/screens/editprofile.dart';
@@ -33,14 +34,16 @@ final routes = {
   '/user-list': (context) => UserListPage(),
   '/artwork-list': (context) => ArtworkListPage(),
   '/gallery-list': (context) => GalleryListPage(),
+  '/editorial-list': (context) => EditorialListPage(),
   '/user-bid': (context) => UserBidPage(),
   '/notif': (context) => NotifPage(),
   '/info': (context) => InfoPage(),
-  '/settings': (context) => Settings(),
-  '/account-settings': (context) => AccountSettings(),
+  // '/settings': (context) => Settings(),
+  // '/account-settings': (context) => AccountSettings(),
   // '/add-artwork': (context) => AddArtworks(),
   '/select-artist': (context) => SelectArtist(),
   '/add-artist': (context) => AddArtist(),
-  '/edit-profile': (context) => EditProfile(),
+  // '/edit-profile': (context) => EditProfile(),
+  // '/artworks': (context) => EditProfile(),
   // '/edit-profile': (context) => EditProfile(),
 };

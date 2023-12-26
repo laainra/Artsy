@@ -33,10 +33,10 @@ class _AddArtworksState extends State<AddArtworks> {
   int? selectedGallery;
   int? selectedArtist;
 
-  String _selectedMedium = '';
-  String _selectedRarity = '';
-  List<String> selectedPhotos = [];
-  List<String> photos = [];
+  String? _selectedMedium = '';
+  String? _selectedRarity = '';
+  String? selectedPhotos = '';
+  String? photos = '';
 
   List<String> galleries = ['Gallery A', 'Gallery B', 'Gallery C'];
   List<String> artists = ['Artist A', 'Artist B', 'Artist C'];
@@ -146,29 +146,37 @@ class _AddArtworksState extends State<AddArtworks> {
     }
   }
 
-  Future<void> getFilePicker() async {
+   Future<String> getFilePicker() async {
+    //
+    // Fungsi untuk memilih file
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowMultiple: true, // Enable multiple file selection
-      allowedExtensions: ['jpg', 'png', 'webm'],
+      // Menampilkan dialog pemilih file
+      type: FileType.custom, // Menentukan tipe file yang diizinkan
+      allowedExtensions: [
+        'jpg',
+        'png',
+        'webm'
+      ], // Menentukan ekstensi file yang diizinkan
     );
 
     if (result != null) {
-      for (PlatformFile file in result.files) {
-        final destination = await getExternalStorageDirectory();
-        File? destinationFile =
-            File('${destination!.path}/${file.name.hashCode}');
-        final newFile = File(file.path!).copy(destinationFile!.path);
-        selectedPhotos.add(destinationFile.path);
-        File(file.path!).delete();
-      }
-
+      // Jika file dipilih
+      PlatformFile sourceFile =
+          result.files.first; // Mengambil file pertama dari hasil pemilihan
+      final destination =
+          await getExternalStorageDirectory(); // Mendapatkan direktori penyimpanan eksternal
+      File? destinationFile = File(
+          '${destination!.path}/${sourceFile.name.hashCode}'); // Menentukan path tujuan file
+      final newFile = File(sourceFile.path!)
+          .copy(destinationFile!.path); // Menyalin file ke lokasi tujuan
       setState(() {
-        photos = [selectedPhotos.join(", ")] ?? [];
-        // Save multiple paths as a comma-separated string
+        photos =
+            destinationFile.path; // Memperbarui path foto dengan path tujuan
       });
+      File(sourceFile.path!).delete(); // Menghapus file sumber setelah disalin
+      return destinationFile.path; // Mengembalikan path tujuan
     } else {
-      showSnackBar("No photos selected!");
+      return "Dokumen belum diupload"; // Mengembalikan pesan jika dokumen belum diupload
     }
   }
 
@@ -344,7 +352,7 @@ class _AddArtworksState extends State<AddArtworks> {
               buildTextField("TITLE", "Title", titleController, true, 370),
               buildDropdown(
                 "MEDIUM",
-                _selectedMedium,
+                _selectedMedium!,
                 true,
                 370,
                 mediums.map((medium) {
@@ -360,7 +368,7 @@ class _AddArtworksState extends State<AddArtworks> {
                   "MATERIALS", "Materials", materialsController, false, 370),
               buildDropdown(
                 "RARITY",
-                _selectedRarity,
+                _selectedRarity!,
                 false,
                 370,
                 rarities.map((rarity) {
@@ -483,6 +491,33 @@ class _AddArtworksState extends State<AddArtworks> {
               Divider(),
               ElevatedButton(
                 onPressed: () {
+
+                                        String? photoartwork = photos;
+                      final data = ArtworkModel(
+                        title: titleController.text,
+                        materials: materialsController.text,
+                        provenance: provenanceController.text,
+                        location: locationController.text,
+                        notes: notesController.text,
+                        condition: conditionController.text,
+                        frame: frameController.text,
+                        certificate: certificateController.text,
+                        year: int.parse(yearController.text),
+                        height: double.parse(heightController.text),
+                        width: double.parse(widthController.text),
+                        depth: double.parse(depthController.text),
+                        price: priceController.text,
+                        galleryId: selectedGallery,
+                        artistId: selectedArtist,
+                        rarity: _selectedRarity!,
+                        medium: _selectedMedium!,
+                        photos: photoartwork.toString(),
+                      );
+                      dbHelper.insertArtwork(data);
+                      titleController.text = '';
+                      Navigator.pop(context);
+                      refreshData();
+                      showSnackBar("Add Artwork Successful");
                   // Call the callback function to pass shipping information
                   // widget.onSavePayment(paymentInfo);
                   //                     Navigator.push(

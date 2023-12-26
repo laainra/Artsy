@@ -6,9 +6,7 @@ import 'package:artsy_prj/model/artistmodel.dart';
 import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:artsy_prj/model/gallerymodel.dart';
 import 'package:artsy_prj/model/showmodel.dart';
-import 'package:artsy_prj/model/artworkshowmodel.dart';
 import 'package:artsy_prj/model/auctionmodel.dart';
-import 'package:artsy_prj/model/resultauctionmodel.dart';
 import 'package:artsy_prj/model/editorialmodel.dart';
 import 'package:artsy_prj/model/likemodel.dart';
 import 'package:artsy_prj/model/transactionmodel.dart';
@@ -33,6 +31,7 @@ class DBHelper {
 
     try {
       _database = await initDB();
+      // await _seedData(_database!);
       return _database!;
     } catch (e) {
       print('Database initialization error: $e');
@@ -160,7 +159,7 @@ class DBHelper {
         CREATE TABLE $editorialTable (
           id INTEGER PRIMARY KEY,
           title TEXT,
-          created_at TEXT,
+          $createdAtColumn TEXT,
           author TEXT,
           content TEXT,
           image TEXT
@@ -176,6 +175,8 @@ class DBHelper {
             amount REAL,
             status TEXT,
             address TEXT,
+            shippingMethod TEXT,
+            description TEXT,
             createdAt TEXT,
             FOREIGN KEY (userId) REFERENCES $userTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
             FOREIGN KEY (artworkId) REFERENCES $artworkTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -198,6 +199,7 @@ class DBHelper {
       rethrow;
     }
   }
+  
 
   Future<List<Map<String, dynamic>>> getAllArtworksWithDetails() async {
     try {
@@ -241,6 +243,19 @@ class DBHelper {
       return null;
     }
   }
+  // Add the following method to delete all records from the artworks table
+  Future<void> deleteAllArtworks() async {
+    final db = await database;
+    await db.delete('artworks');
+  }
+  Future<void> deleteAllArtists() async {
+    final db = await database;
+    await db.delete('artists');
+  }
+  Future<void> deleteAllEditorials() async {
+    final db = await database;
+    await db.delete('editorials');
+  }
 
   Future<List<TransactionModel>> getAllTransactions() async {
     final db = await database;
@@ -270,20 +285,20 @@ class DBHelper {
   }
 
 // Insert a user into the database
-Future<void> insertUser(UserModel user) async {
-  try {
-    final db = await database;
+  Future<void> insertUser(UserModel user) async {
+    try {
+      final db = await database;
 
-    // Add createdAt field with the current date and time
-    final createdAt = DateTime.now().toIso8601String();
-    final userMap = user.toMap()..['createdAt'] = createdAt;
+      // Add createdAt field with the current date and time
+      final createdAt = DateTime.now().toIso8601String();
+      final userMap = user.toMap()..['createdAt'] = createdAt;
 
-    await db.insert(userTable, userMap, conflictAlgorithm: ConflictAlgorithm.replace);
-  } catch (e) {
-    print('Error inserting user: $e');
+      await db.insert(userTable, userMap,
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    } catch (e) {
+      print('Error inserting user: $e');
+    }
   }
-}
-
 
   // Retrieve a user by ID from the database
   Future<UserModel?> getUser(int id) async {
@@ -349,6 +364,22 @@ Future<void> insertUser(UserModel user) async {
       await db.delete(userTable, where: 'id = ?', whereArgs: [id]);
     } catch (e) {
       print('Error deleting user: $e');
+    }
+  }
+
+  Future<UserModel?> getUserByEmail(String email) async {
+    final db = await database;
+
+    List<Map<String, dynamic>> result = await db.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+
+    if (result.isNotEmpty) {
+      return UserModel.fromMap(result.first);
+    } else {
+      return null;
     }
   }
 
@@ -761,7 +792,9 @@ Future<void> insertUser(UserModel user) async {
   Future<void> insertEditorial(EditorialModel editorial) async {
     try {
       final db = await database;
-      await db.insert(editorialTable, editorial.toMap(),
+      final createdAt = DateTime.now().toIso8601String();
+      final editorialMap = editorial.toMap()..['createdAt'] = createdAt;
+      await db.insert(editorialTable, editorialMap,
           conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (e) {
       print('Error inserting editorial: $e');
@@ -787,16 +820,12 @@ Future<void> insertUser(UserModel user) async {
   }
 
   // Retrieve all editorials from the database
-  Future<List<EditorialModel>> getAllEditorials() async {
+  Future<List<Map<String, dynamic>>> getAllEditorials() async {
     try {
       final db = await database;
-      final List<Map<String, dynamic>> maps = await db.query(editorialTable);
-
-      return List.generate(maps.length, (i) {
-        return EditorialModel.fromMap(maps[i]);
-      });
+      return db.query(editorialTable);
     } catch (e) {
-      print('Error retrieving all editorials: $e');
+      print('Error retrieving all galleries: $e');
       return [];
     }
   }
@@ -835,7 +864,7 @@ Future<void> insertUser(UserModel user) async {
   }
 
   Future<void> _seedUsers(Database db) async {
-    for (int i = 1; i <= 5; i++) {
+    for (int i = 1; i <= 3; i++) {
       await db.rawInsert('''
       INSERT INTO $userTable (email, password, profileImage, name, location, profession, positions, about, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -854,61 +883,285 @@ Future<void> insertUser(UserModel user) async {
   }
 
   Future<void> _seedArtists(Database db) async {
-    for (int i = 1; i <= 5; i++) {
-      await db.rawInsert('''
-      INSERT INTO $artistTable (name, nationality, birthYear, deathYear, photo)
-      VALUES (?, ?, ?, ?, ?)
-    ''', [
-        'Artist $i',
-        'Nationality $i',
-        'Birth Year $i',
-        'Death Year $i',
-        'artist_photo_url$i',
-      ]);
-    }
+    await db.rawInsert('''
+    INSERT INTO $artistTable (name, nationality, birthYear, deathYear, photo)
+    VALUES (?, ?, ?, ?, ?)
+  ''', ['Vincent van Gogh', 'Dutch', 1853, 1890, 'assets/images/vangogh.jpeg']);
+
+    await db.rawInsert('''
+    INSERT INTO $artistTable (name, nationality, birthYear, deathYear, photo)
+    VALUES (?, ?, ?, ?, ?)
+  ''', [
+      'Leonardo da Vinci',
+      'Italian',
+      1452,
+      1519,
+      'assets/images/davinci.jpeg'
+    ]);
+
+    await db.rawInsert('''
+    INSERT INTO $artistTable (name, nationality, birthYear, deathYear, photo)
+    VALUES (?, ?, ?, ?, ?)
+  ''', ['Claude Monet', 'French', 1840, 1926, 'assets/images/monet.jpeg']);
+
+    await db.rawInsert('''
+    INSERT INTO $artistTable (name, nationality, birthYear, deathYear, photo)
+    VALUES (?, ?, ?, ?, ?)
+  ''', ['Frida Kahlo', 'Mexican', 1907, 1954, 'assets/images/kahlo.jpg']);
+
+    await db.rawInsert('''
+    INSERT INTO $artistTable (name, nationality, birthYear, deathYear, photo)
+    VALUES (?, ?, ?, ?, ?)
+  ''', ['Pablo Picasso', 'Spanish', 1881, 1973, 'assets/images/picasso.jpg']);
   }
 
   Future<void> _seedGalleries(Database db) async {
-    for (int i = 1; i <= 5; i++) {
-      await db.rawInsert('''
-      INSERT INTO $galleryTable (name, location, description, photo)
-      VALUES (?, ?, ?, ?)
-    ''', [
-        'Gallery $i',
-        'Location $i',
-        'Description $i',
-        'gallery_photo_url$i',
-      ]);
-    }
+    await db.rawInsert('''
+    INSERT INTO $galleryTable (name, location, description, photo)
+    VALUES (?, ?, ?, ?)
+  ''', [
+      'Ciputra Artpreneur',
+      'Jakarta, Indonesia',
+      'A vibrant space showcasing contemporary Indonesian art, fostering dialogue and creativity.',
+      'assets/images/ciputra.jpg'
+    ]);
+
+    await db.rawInsert('''
+    INSERT INTO $galleryTable (name, location, description, photo)
+    VALUES (?, ?, ?, ?)
+  ''', [
+      'National Gallery Singapore',
+      'Singapore',
+      'Home to the worlds largest public collection of Singaporean and Southeast Asian art, spanning centuries of artistic expression.',
+      'assets/images/singapore.jpg'
+    ]);
+
+    await db.rawInsert('''
+    INSERT INTO $galleryTable (name, location, description, photo)
+    VALUES (?, ?, ?, ?)
+  ''', [
+      'The Met Fifth Avenue',
+      'New York City, USA',
+      'One of the worlds most iconic art museums, housing a vast collection spanning 5,000 years of world culture.',
+      'assets/images/met.jpg'
+    ]);
   }
 
   Future<void> _seedArtworks(Database db) async {
-    for (int i = 1; i <= 5; i++) {
-      await db.rawInsert('''
+    final artworksData = [
+      // Vincent van Gogh
+      {
+        'title': 'Starry Night',
+        'medium': 'Oil on canvas',
+        'year': '1889',
+        'materials': 'Paint',
+        'rarity': 'High',
+        'height': 73.7,
+        'width': 92.1,
+        'depth': 0,
+        'price': 5000000,
+        'provenance': 'Private Collection',
+        'location': 'Museum of Modern Art, New York',
+        'notes': 'One of van Gogh\'s most famous works.',
+        'photos':
+            'https://cdn.britannica.com/78/43678-050-F4DC8D93/Starry-Night-canvas-Vincent-van-Gogh-New-1889.jpg',
+        'condition': 'Excellent',
+        'frame': 'Wooden frame',
+        'status': 'Available',
+        'certificate': 'Yes',
+        'artistId': 1, // Assume artistId for Vincent van Gogh is 1
+        'galleryId': 1, // Assume galleryId for the gallery is 1
+      },
+      // Leonardo da Vinci
+      {
+        'title': 'Mona Lisa',
+        'medium': 'Oil on poplar panel',
+        'year': '1503-1506',
+        'materials': 'Paint',
+        'rarity': 'High',
+        'height': 77,
+        'width': 53,
+        'depth': 0,
+        'price': 10000000,
+        'provenance': 'Louvre Museum',
+        'location': 'Louvre Museum, Paris',
+        'notes': 'One of the most famous portraits in the world.',
+        'photos':
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/640px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',
+        'condition': 'Good',
+        'frame': 'Wooden frame',
+        'status': 'Available',
+        'certificate': 'Yes',
+        'artistId': 2, // Assume artistId for Leonardo da Vinci is 2
+        'galleryId': 1, // Assume galleryId for the gallery is 1
+      },
+      // Pablo Picasso
+      {
+        'title': 'Guernica',
+        'medium': 'Oil on canvas',
+        'year': '1937',
+        'materials': 'Paint',
+        'rarity': 'High',
+        'height': 349,
+        'width': 776,
+        'depth': 0,
+        'price': 15000000,
+        'provenance': 'Museo Reina Sofia',
+        'location': 'Museo Reina Sofia, Madrid',
+        'notes': 'Depicts the horrors of war.',
+        'photos':
+            'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+        'condition': 'Excellent',
+        'frame': 'Unframed',
+        'status': 'Available',
+        'certificate': 'Yes',
+        'artistId': 5, // Assume artistId for Pablo Picasso is 3
+        'galleryId': 1, // Assume galleryId for the gallery is 1
+      },
+      // Frida Kahlo
+      {
+        'title': 'The Two Fridas',
+        'medium': 'Oil on canvas',
+        'year': '1939',
+        'materials': 'Paint',
+        'rarity': 'High',
+        'height': 173.5,
+        'width': 173,
+        'depth': 0,
+        'price': 8000000,
+        'provenance': 'Museo de Arte Moderno',
+        'location': 'Museo de Arte Moderno, Mexico City',
+        'notes': 'Reflects Kahlo\'s emotional pain.',
+        'photos':
+            'https://www.fridakahlo.org/images/paintings/the-two-fridas.jpg',
+        'condition': 'Good',
+        'frame': 'Wooden frame',
+        'status': 'Available',
+        'certificate': 'Yes',
+        'artistId': 4, // Assume artistId for Frida Kahlo is 4
+        'galleryId': 1, // Assume galleryId for the gallery is 1
+      },
+      // Claude Monet
+      {
+        'title': 'Water Lilies and Japanese Bridge',
+        'medium': 'Oil on canvas',
+        'year': '1899',
+        'materials': 'Paint',
+        'rarity': 'High',
+        'height': 89,
+        'width': 93.1,
+        'depth': 0,
+        'price': 6000000,
+        'provenance': 'Musée d\'Orsay',
+        'location': 'Musée d\'Orsay, Paris',
+        'notes': 'Part of Monet\'s iconic water lilies series.',
+        'photos':
+            'https://puam-loris.aws.princeton.edu/loris/y1972-15.jp2/full/!1200,630/0/default.jpg',
+        'condition': 'Very good',
+        'frame': 'Gilded frame',
+        'status': 'Available',
+        'certificate': 'Yes',
+        'artistId': 3, // Assume artistId for Claude Monet is 5
+        'galleryId': 1, // Assume galleryId for the gallery is 1
+      },
+    ];
+
+    final batch = db.batch();
+
+    for (final artworkData in artworksData) {
+      batch.rawInsert('''
       INSERT INTO $artworkTable (title, medium, year, materials, rarity, height, width, depth, price, provenance, location, notes, photos, condition, frame, status, certificate, artistId, galleryId)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', [
-        'Artwork $i',
-        'Medium $i',
-        'Year $i',
-        'Materials $i',
-        'Rarity $i',
-        Random().nextDouble() * 100, // height
-        Random().nextDouble() * 100, // width
-        Random().nextDouble() * 100, // depth
-        'Price $i',
-        'Provenance $i',
-        'Location $i',
-        'Notes $i',
-        'Photos $i',
-        'Condition $i',
-        'Frame $i',
-        'sell', // status
-        'Certificate $i',
-        i, // artistId
-        i, // galleryId
+        artworkData['title'],
+        artworkData['medium'],
+        artworkData['year'],
+        artworkData['materials'],
+        artworkData['rarity'],
+        artworkData['height'],
+        artworkData['width'],
+        artworkData['depth'],
+        artworkData['price'],
+        artworkData['provenance'],
+        artworkData['location'],
+        artworkData['notes'],
+        artworkData['photos'],
+        artworkData['condition'],
+        artworkData['frame'],
+        artworkData['status'],
+        artworkData['certificate'],
+        artworkData['artistId'],
+        artworkData['galleryId'],
       ]);
     }
+
+    await batch.commit();
+  }
+
+  Future<void> _seedEditorials(Database db) async {
+    final editorialsData = [
+      {
+        'title': 'The Impact of Impressionism on Modern Art',
+        'createdAt': '2023-01-01',
+        'author': 'Art Enthusiast',
+        'content':
+            'Impressionism, a revolutionary art movement of the 19th century, had a profound impact on modern art. Artists like Claude Monet and Edgar Degas...',
+        'image': 'impressionism_impact_image_url',
+      },
+      {
+        'title': 'Frida Kahlo: An Icon of Surrealism and Self-Expression',
+        'createdAt': '2023-02-15',
+        'author': 'Art Historian',
+        'content':
+            'Frida Kahlo, a Mexican artist known for her unique style and powerful self-portraits, remains an icon of surrealism and self-expression...',
+        'image':
+            'https://www.fridakahlo.org/images/paintings/the-two-fridas.jpg',
+      },
+      {
+        'title': 'The Evolution of Cubism: Picasso and Beyond',
+        'createdAt': '2023-03-20',
+        'author': 'Art Critic',
+        'content':
+            'Cubism, pioneered by Pablo Picasso and Georges Braque, marked a significant shift in artistic representation. This article explores the evolution of Cubism and its impact on the art world...',
+        'image':
+            'https://images.masterworksfineart.com/2017/06/pablo-picasso-three-musicians.jpg',
+      },
+      {
+        'title': 'Leonardo da Vinci: Mastering the Art of Innovation',
+        'createdAt': '2023-04-10',
+        'author': 'Art Scholar',
+        'content':
+            'Leonardo da Vinci, a true Renaissance man, not only mastered the traditional arts but also made groundbreaking contributions to science and engineering. This editorial delves into the innovative mind of da Vinci...',
+        'image':
+            'https://cdn.britannica.com/04/95904-050-7EB39FC8/Last-Supper-wall-painting-restoration-Leonardo-da-1999.jpg',
+      },
+      {
+        'title': 'The Beauty of Van Gogh\'s Starry Night',
+        'createdAt': '2023-05-25',
+        'author': 'Art Lover',
+        'content':
+            'Starry Night by Vincent van Gogh is considered one of the most beautiful and iconic paintings in art history. Explore the mesmerizing beauty of this masterpiece and its enduring impact...',
+        'image':
+            'https://cdn.britannica.com/78/43678-050-F4DC8D93/Starry-Night-canvas-Vincent-van-Gogh-New-1889.jpg',
+      },
+    ];
+
+    final batch = db.batch();
+
+    for (final editorialData in editorialsData) {
+      batch.rawInsert('''
+      INSERT INTO $editorialTable (title, createdAt, author, content, image)
+      VALUES (?, ?, ?, ?, ?)
+    ''', [
+        editorialData['title'],
+        editorialData['createdAt'],
+        editorialData['author'],
+        editorialData['content'],
+        editorialData['image'],
+      ]);
+    }
+
+    await batch.commit();
   }
 
   // // Insert a result auction into the database

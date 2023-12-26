@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:artsy_prj/dbhelper.dart';
+import 'package:artsy_prj/model/artistmodel.dart';
+import 'dart:io';
 
 class AddArtist extends StatefulWidget {
   const AddArtist({Key? key}) : super(key: key);
@@ -7,10 +12,60 @@ class AddArtist extends StatefulWidget {
 }
 
 class _AddArtistState extends State<AddArtist> {
+  var dbHelper = DBHelper();
   TextEditingController nameController = TextEditingController();
   TextEditingController nationalityController = TextEditingController();
   TextEditingController birthyearController = TextEditingController();
   TextEditingController deathyearController = TextEditingController();
+  String? photoprofile;
+  List<Map<String, dynamic>> artist = [];
+  void refreshData() async {
+    final data = await dbHelper.getAllArtists();
+    setState(() {
+      artist = data;
+    });
+    print("Data in the database:");
+    for (var entry in data) {
+      print(entry);
+    }
+  }
+
+  @override
+  void initState() {
+    refreshData();
+    super.initState();
+  }
+
+  Future<String> getFilePicker() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png', 'webm'],
+    );
+
+    if (result != null) {
+      PlatformFile sourceFile = result.files.first;
+      final destination = await getExternalStorageDirectory();
+      File? destinationFile =
+          File('${destination!.path}/${sourceFile.name.hashCode}');
+      final newFile = File(sourceFile.path!).copy(destinationFile!.path);
+      setState(() {
+        photoprofile = destinationFile.path;
+      });
+      File(sourceFile.path!).delete();
+      return destinationFile.path;
+    } else {
+      return "Photo not uploaded!";
+    }
+  }
+
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   Widget buildTextField(String label, String hint,
       TextEditingController controller, bool isRequired, double? width) {
@@ -131,6 +186,20 @@ class _AddArtistState extends State<AddArtist> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  String? photo = photoprofile;
+                  final data = ArtistModel(
+                    name: nameController.text,
+                    nationality: nationalityController.text,
+                    birthYear: birthyearController.text,
+                    deathYear: deathyearController.text,
+                    photo: photo.toString(),
+                  );
+                  dbHelper.insertArtist(data);
+                  nameController.text = '';
+                  nationalityController.text = '';
+                  Navigator.pop(context);
+                  refreshData();
+                  showSnackBar("Add Artist Successful");
                   // Call the callback function to pass shipping information
                   // widget.onSavePayment(paymentInfo);
                   //                     Navigator.push(

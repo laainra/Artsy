@@ -1,3 +1,4 @@
+import 'package:artsy_prj/controller/auth.dart';
 import 'package:artsy_prj/dbhelper.dart';
 import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
@@ -22,28 +23,39 @@ class _LoginFormPageState extends State<LoginFormPage> {
   String errorMessage = '';
   bool isLoginTrue = false;
   final db = DBHelper();
+  
 
 login() async {
   var response = await db.getLogin(UserModel(
-      email: emailController.text, password: passwordController.text));
-  
-  UserModel user; // Define the user variable outside the if conditions
-  
+    email: emailController.text,
+    password: passwordController.text,
+  ));
+
+  UserModel? user;
+
   if (response == true) {
     // If login is correct, then go to notes
     if (emailController.text == 'admin@artsy.com' &&
-        passwordController.text == 'Admin123') {
+        passwordController.text == 'Admin1234') {
+      Auth.login(); // Update status login
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => AdminDashboardPage()),
       );
       return; // Return to avoid the rest of the code below
     } else {
-      // If not admin credentials, set the user data
-      user = UserModel(
-        email: emailController.text,
-        // Add other user properties here
-      );
+      // If not admin credentials, get the user data from the database
+      user = await db.getUserByEmail(emailController.text);
+
+      // Check if the user is still null (not found in the database)
+      if (user == null) {
+        // Handle the case where the user is not found
+        setState(() {
+          isLoginTrue = true;
+          errorMessage = 'User not found';
+        });
+        return; // Return to avoid the rest of the code below
+      }
     }
   } else {
     // If not, set the bool value to show an error message
@@ -54,12 +66,23 @@ login() async {
     return; // Return to avoid the rest of the code below
   }
 
+  // Check if the user is already logged in
+  if (Auth.isLoggedIn) {
+    // Redirect to another page if already logged in
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage(user: user)),
+    );
+    return;
+  }
+
   // Continue with the rest of the code here, passing the user to the home screen
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => HomePage(user: user)),
   );
 }
+
 
 
   final formKey = GlobalKey<FormState>();

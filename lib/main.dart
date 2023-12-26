@@ -3,9 +3,8 @@ import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/routes.dart';
 import 'package:flutter/material.dart';
 
-
 void main() async {
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize your database and other necessary setup
   final dbHelper = DBHelper();

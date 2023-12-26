@@ -5,13 +5,10 @@ class AdminDashboardPage extends StatelessWidget {
   final List<List<String>> form = [
     ["Artist List", "/artist-list"],
     ["Artwork List", "/artwork-list"],
-    ["Auction List", "/auction-list"],
     ["Editorial List", "/editorial-list"],
     ["Gallery List", "/gallery-list"],
-    ["Show List", "/show-list"],
     ["Transaction List", "/transaction-list"],
     ["User List", "/user-list"],
-    ["Detail Artwork", "/detail-artwork"],
   ];
 
   @override

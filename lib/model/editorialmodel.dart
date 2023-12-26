@@ -1,18 +1,18 @@
 class EditorialModel {
   int? id;
-  String title;
-  String createdAt;
-  String author;
-  String content;
-  String image;
+  String? title;
+  String? createdAt;
+  String? author;
+  String? content;
+  String? image;
 
   EditorialModel({
     this.id,
-    required this.title,
-    required this.createdAt,
-    required this.author,
-    required this.content,
-    required this.image,
+    this.title,
+    this.createdAt,
+    this.author,
+    this.content,
+    this.image,
   });
 
   // Convert EditorialModel object to a Map

@@ -43,6 +43,13 @@ class UserModel {
     return formatter.format(now);
   }
 
+   @override
+  String toString() {
+    return 'UserModel{id: $id, name: $name, location: $location, '
+           'profession: $profession, positions: $positions, '
+           'about: $about, profileImage: $profileImage}';
+  }
+
   // Convert User object to a Map
   Map<String, dynamic> toMap() {
     return {
