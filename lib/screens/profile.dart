@@ -2,6 +2,7 @@ import 'package:artsy_prj/components/profile/collections.dart';
 import 'package:artsy_prj/components/profile/insight.dart';
 import 'package:artsy_prj/components/profile/saves.dart';
 import 'package:artsy_prj/model/usermodel.dart';
+import 'package:artsy_prj/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
@@ -63,17 +64,18 @@ class _ProfilePageState extends State<ProfilePage>
                           children: [
                             widget.user.profileImage != null
                                 ? Container(
+                                    margin: EdgeInsets.only(top: 10),
                                     width: 30,
                                     height: 30,
                                     decoration: BoxDecoration(
                                       color: Colors.grey,
                                       borderRadius: BorderRadius.circular(15),
                                     ),
-                                    
-                                        child: Image.file(
+                                    child: Image.file(
                                         File(widget.user.profileImage!)),
                                   )
                                 : Container(
+                                    margin: EdgeInsets.only(top: 10),
                                     width: 30,
                                     height: 30,
                                     decoration: BoxDecoration(
@@ -82,10 +84,9 @@ class _ProfilePageState extends State<ProfilePage>
                                     ),
                                     child: Icon(Icons.person_outline,
                                         color: Colors.white),
-                                    
                                   ),
                             SizedBox(
-                              width: 5,
+                              width: 10,
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage>
                                     style: TextStyle(fontSize: 19),
                                   ),
                                 Text(
-                                  "Member since 2023",
+                                  "Member since ${widget.user.createdAt != null ? DateTime.parse(widget.user.createdAt!).year : 'Unknown'}",
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey,
@@ -114,7 +115,14 @@ class _ProfilePageState extends State<ProfilePage>
                     IconButton(
                       icon: Icon(Icons.settings),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/settings');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Settings(
+                              user: widget.user,
+                            ),
+                          ),
+                        );
                       },
                     )
                   ],
@@ -128,7 +136,9 @@ class _ProfilePageState extends State<ProfilePage>
                     color: Colors.grey,
                   ),
                   label: Text(
-                    "Indonesia",
+                    widget.user.location != null
+                        ? widget.user.location!
+                        : "Unknown",
                     style: TextStyle(
                       color: Colors.grey,
                     ),

@@ -10,7 +10,7 @@ import 'package:artsy_prj/screens/search.dart';
 import 'package:artsy_prj/screens/userbid.dart';
 
 class HomePage extends StatefulWidget {
-  final UserModel user;
+  final UserModel? user;
 
   const HomePage({Key? key, required this.user}) : super(key: key);
 
@@ -27,11 +27,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _pages = [
-      HomeTab(user: widget.user),
+      HomeTab(user: widget.user!),
       SearchTab(),
       CommentsTab(),
       PriceTagTab(),
-      ProfileTab(user: widget.user),
+      ProfileTab(user: widget.user!),
     ];
   }
 

@@ -71,7 +71,7 @@ class _CCFormState extends State<CCForm> {
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + widget.artwork["harga"]),
+            Text("Price " + widget.artwork["price"]),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -84,7 +84,7 @@ class _CCFormState extends State<CCForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text(widget.artwork["harga"],
+                  child: Text(widget.artwork["price"],
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(

@@ -1,7 +1,17 @@
+import 'package:artsy_prj/dbhelper.dart';
+import 'package:artsy_prj/model/usermodel.dart';
+import 'package:artsy_prj/screens/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class EditProfile extends StatefulWidget {
-  const EditProfile({Key? key}) : super(key: key);
+  final UserModel user;
+
+  const EditProfile({Key? key, required this.user}) : super(key: key);
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -12,38 +22,103 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController professionController = TextEditingController();
   TextEditingController positionController = TextEditingController();
   TextEditingController aboutController = TextEditingController();
-  bool isHintFilled = false;
+  bool isHintFilled = true;
   var checkVerifyId = false;
   var checkVerifyEmail = false;
-  Widget buildTextField(String label, String hint,
-      TextEditingController controller, bool isHintFilled) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(fontSize: 13),
-            ),
-            SizedBox(height: 8),
-            TextField(
-              controller: controller,
-              style:
-                  TextStyle(color: isHintFilled ? Colors.black : Colors.grey),
-              decoration: InputDecoration(
-                // labelText: label,
+  String profileImage = '';
+  final DBHelper db = DBHelper();
+  bool isFilePickerActive = false;
 
-                hintText: hint,
-                hintStyle:
-                    TextStyle(color: isHintFilled ? Colors.black : Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
+  Future<String> getFilePicker() async {
+    if (isFilePickerActive) {
+      // File picker is already active, return or show a message
+      return "File picker is already active";
+    }
+
+    // Set the flag to indicate that the file picker is now active
+    setState(() {
+      isFilePickerActive = true;
+    });
+
+    // Fungsi untuk memilih file
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      // Menampilkan dialog pemilih file
+      type: FileType.custom, // Menentukan tipe file yang diizinkan
+      allowedExtensions: [
+        'jpg',
+        'png',
+        'webm'
+      ], // Menentukan ekstensi file yang diizinkan
+    );
+
+    if (result != null) {
+      // Jika file dipilih
+      PlatformFile sourceFile =
+          result.files.first; // Mengambil file pertama dari hasil pemilihan
+      final destination =
+          await getExternalStorageDirectory(); // Mendapatkan direktori penyimpanan eksternal
+      File? destinationFile = File(
+          '${destination!.path}/${sourceFile.name.hashCode}'); // Menentukan path tujuan file
+      final newFile = File(sourceFile.path!)
+          .copy(destinationFile!.path); // Menyalin file ke lokasi tujuan
+      setState(() {
+        profileImage =
+            destinationFile.path; // Memperbarui path foto dengan path tujuan
+      });
+      File(sourceFile.path!).delete(); // Menghapus file sumber setelah disalin
+      return destinationFile.path; // Mengembalikan path tujuan
+    } else {
+      return "Dokumen belum diupload"; // Mengembalikan pesan jika dokumen belum diupload
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Set initial values for TextFields
+    nameController.text = widget.user.name ?? '';
+    locationController.text = widget.user.location ?? '';
+    professionController.text = widget.user.profession ?? '';
+    positionController.text = widget.user.positions ?? '';
+    aboutController.text = widget.user.about ?? '';
+    profileImage = widget.user.profileImage ?? '';
+  }
+
+  Widget buildTextField(
+      String label, String hint, TextEditingController controller) {
+    bool isHintFilled = controller.text.isNotEmpty;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 13),
+          ),
+          SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            style: TextStyle(color: isHintFilled ? Colors.black : Colors.grey),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: controller.text.isNotEmpty ? Colors.black : Colors.grey,
               ),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(),
             ),
-          ],
-        ));
+            onTap: () {
+              setState(() {
+                isHintFilled = controller.text.isNotEmpty;
+              });
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -68,8 +143,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
             ),
             onPressed: () {
-              // Fungsi untuk kembali ke halaman sebelumnya
-              Navigator.pop(context);
+              Navigator.pop(context, widget.user);
             },
           ),
         ),
@@ -88,7 +162,15 @@ class _EditProfileState extends State<EditProfile> {
                       color: Colors.grey,
                       borderRadius: BorderRadius.circular(180),
                     ),
-                    child: Icon(Icons.person_outline, color: Colors.white),
+                    child: profileImage == null
+                        ? Center(
+                            child: Image.file(
+                            fit: BoxFit.cover,
+                            File(widget.user.profileImage!),
+                            width: 88,
+                            height: 88,
+                          ))
+                        : Center(child: FlutterLogo()),
                   ),
                   SizedBox(
                     width: 20,
@@ -98,8 +180,8 @@ class _EditProfileState extends State<EditProfile> {
                       "Choose an Image",
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
-                    onPressed: () {
-                      //
+                    onPressed: () async {
+                      getFilePicker();
                     },
                   )
                 ],
@@ -108,18 +190,41 @@ class _EditProfileState extends State<EditProfile> {
                 height: 20,
               ),
               buildTextField(
-                  "FULL NAME", "Enter Full Name", nameController, isHintFilled),
-              buildTextField("PRIMARY LOCATION", "Enter Your Location",
-                  locationController, isHintFilled),
-              buildTextField("PROFESSION", "Profession or job title",
-                  professionController, isHintFilled),
+                "FULL NAME",
+                nameController.text.isNotEmpty
+                    ? widget.user.name ?? "Enter Full Name"
+                    : "Enter Full Name",
+                nameController,
+              ),
               buildTextField(
-                  "OTHER RELEVANT POSITIONS",
-                  "Memberships, institutions, positions",
-                  positionController,
-                  isHintFilled),
+                "PRIMARY LOCATION",
+                locationController.text.isNotEmpty
+                    ? widget.user.location ?? "Enter Your Location"
+                    : "Enter Your Location",
+                locationController,
+              ),
               buildTextField(
-                  "ABOUT", "Add a brief bio", positionController, isHintFilled),
+                "PROFESSION",
+                professionController.text.isNotEmpty
+                    ? widget.user.profession ?? "Profession or job title"
+                    : "Profession or job title",
+                professionController,
+              ),
+              buildTextField(
+                "OTHER RELEVANT POSITIONS",
+                positionController.text.isNotEmpty
+                    ? widget.user.positions ??
+                        "Memberships, institutions, positions"
+                    : "Memberships, institutions, positions",
+                positionController,
+              ),
+              buildTextField(
+                "ABOUT",
+                aboutController.text.isNotEmpty
+                    ? widget.user.about ?? "Add a brief bio"
+                    : "Add a brief bio",
+                aboutController,
+              ),
               CheckboxListTile(
                 activeColor: Colors.black,
                 checkColor: Colors.white,
@@ -222,18 +327,31 @@ class _EditProfileState extends State<EditProfile> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Call the callback function to pass shipping information
-                  // widget.onSavePayment(paymentInfo);
-                  //                     Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => ReviewPage(
-                  //       shipping: widget.shipping,
-                  //       artwork: widget.artwork,
-                  //       payment: paymentInfo
-                  //     ),
-                  //   ),
-                  // );
+                  UserModel updatedUser = UserModel(
+                      id: widget.user.id,
+                      name: nameController.text,
+                      location: locationController.text,
+                      profession: professionController.text,
+                      positions: positionController.text,
+                      about: aboutController.text,
+                      profileImage: profileImage.toString(),
+                      email: widget.user.email,
+                      password: widget.user.password,
+                      createdAt: widget.user.createdAt);
+
+                  print(
+                      "Data before update: ${widget.user.toString().toString()}");
+                  print("Data after update: $updatedUser");
+                  db.updateUser(updatedUser);
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(
+                        user: updatedUser, // Pass the updated user to Settings
+                      ),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

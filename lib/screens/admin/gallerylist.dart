@@ -172,7 +172,7 @@ class _GalleryListPageState extends State<GalleryListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-                leading: TextButton(
+        leading: TextButton(
           child: Text(
             "<",
             style: TextStyle(
@@ -186,8 +186,8 @@ class _GalleryListPageState extends State<GalleryListPage> {
             Navigator.pop(context);
           },
         ),
-              backgroundColor: Colors.white,
-        title: Text("Gallery List",style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        title: Text("Gallery List", style: TextStyle(color: Colors.black)),
       ),
       body: ListView.builder(
         itemCount: galleries.length,

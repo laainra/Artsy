@@ -51,7 +51,7 @@ class PaymentSuccessPage extends StatelessWidget {
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + artwork["harga"]),
+            Text("Price " + artwork["price"]),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -64,7 +64,7 @@ class PaymentSuccessPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text(artwork["harga"],
+                  child: Text(artwork["price"],
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
