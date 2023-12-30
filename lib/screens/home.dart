@@ -155,7 +155,7 @@ class HomeTab extends StatelessWidget {
             itemCount: 4,
             itemBuilder: (context, index) {
               return [
-                NewWorksSection(),
+                NewWorksSection(user: user,),
                 ExploreSection(),
                 AuctionSection(),
                 EditorialSection()

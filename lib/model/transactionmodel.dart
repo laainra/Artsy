@@ -3,7 +3,7 @@ class TransactionModel {
   final int? userId;
   final int? artworkId;
   final String? paymentMethod;
-  final double? amount;
+  final String? amount;
   final String? status;
   final String? shippingMethod;
   final String? description;

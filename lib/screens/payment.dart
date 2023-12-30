@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
 
 class PurchasePage extends StatefulWidget {
   final Map<String, dynamic> artworkDetails;
-  const PurchasePage({Key? key, required this.artworkDetails})
+  final UserModel? user;
+  const PurchasePage({Key? key, required this.artworkDetails,required this.user})
       : super(key: key);
   @override
   _PurchasePageState createState() => _PurchasePageState();
@@ -18,19 +20,17 @@ class _PurchasePageState extends State<PurchasePage>
   late TabController _tabController;
   ShippingInfo? shippingInfo;
   PaymentInfo? paymentInfo;
-   PaymentInfo? _paymentInfo;
-
+  PaymentInfo? _paymentInfo;
 
   void onSavePayment(PaymentInfo paymentInfo) {
-  // Simpan informasi pembayaran ke dalam state
-  setState(() {
-    _paymentInfo = paymentInfo;
-  });
+    // Simpan informasi pembayaran ke dalam state
+    setState(() {
+      _paymentInfo = paymentInfo;
+    });
 
-  // Cetak informasi pembayaran untuk memastikan bahwa sudah disimpan
-  print("Payment Info received: $_paymentInfo");
-}
-
+    // Cetak informasi pembayaran untuk memastikan bahwa sudah disimpan
+    print("Payment Info received: $_paymentInfo");
+  }
 
   @override
   void initState() {
@@ -110,25 +110,26 @@ class _PurchasePageState extends State<PurchasePage>
 
                     // _tabController.animateTo(1); // Move to the next tab
                   },
-                  tabController: _tabController, 
+                  tabController: _tabController,
                 ),
                 // Halaman Payment (pass required data to PaymentPage)
                 PaymentPage(
                   shipping: shippingInfo,
                   artwork: widget.artworkDetails,
-                     onSaveAndContinue: (paymentInfo) {
+                  onSaveAndContinue: (paymentInfo) {
                     setState(() {
                       this.paymentInfo = paymentInfo;
                     });
 
                     // _tabController.animateTo(1); // Move to the next tab
                   },
-                  tabController: _tabController, 
+                  tabController: _tabController,
+                  user: widget.user,
                 ),
 
                 // Halaman Review (pass required data to ReviewPage)
                 ReviewPage(
-                  
+                  user: widget.user,
                     shipping: shippingInfo,
                     artwork: widget.artworkDetails,
                     payment: paymentInfo),

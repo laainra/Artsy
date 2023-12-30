@@ -1,6 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:artsy_prj/screens/addartwork.dart';
 import 'package:flutter/material.dart';
+import 'package:artsy_prj/dbhelper.dart';
+import 'package:artsy_prj/model/artistmodel.dart';
+import 'dart:io';
 
 class SelectArtist extends StatefulWidget {
   @override
@@ -8,9 +11,10 @@ class SelectArtist extends StatefulWidget {
 }
 
 class _SelectArtistState extends State<SelectArtist> {
+  var dbHelper = DBHelper();
   FocusNode _searchFocusNode = FocusNode();
   TextEditingController _searchController = TextEditingController();
-  List<Map<String, dynamic>> trendingArtists = [
+  List<Map<String, dynamic>> artist = [
     {
       'name': 'Leonardo Da Vinci ',
       'nationality': 'France',
@@ -43,11 +47,17 @@ class _SelectArtistState extends State<SelectArtist> {
     },
   ];
 
+  void fetchArtist() async {
+    final artistData = await dbHelper.getAllArtists();
+    setState(() {
+      artist.addAll(artistData);
+    });
+  }
+
   @override
   void initState() {
+    fetchArtist();
     super.initState();
-
-    // Add a listener to the FocusNode to update the state
     _searchFocusNode.addListener(() {
       setState(() {});
     });
@@ -75,7 +85,6 @@ class _SelectArtistState extends State<SelectArtist> {
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          // Search bar
           Container(
             margin: EdgeInsets.only(top: 15),
             height: 50,
@@ -110,7 +119,7 @@ class _SelectArtistState extends State<SelectArtist> {
                         onTap: () {
                           setState(() {
                             _searchController.clear();
-                            _searchFocusNode.unfocus(); // Remove focus
+                            _searchFocusNode.unfocus();
                           });
                         },
                         child: Padding(
@@ -121,7 +130,7 @@ class _SelectArtistState extends State<SelectArtist> {
                           ),
                         ),
                       )
-                    : SizedBox(), // Empty container if not focused
+                    : SizedBox(),
               ],
             ),
           ),
@@ -143,7 +152,6 @@ class _SelectArtistState extends State<SelectArtist> {
                     fontSize: 15,
                     color: Colors.grey,
                     decoration: TextDecoration.underline,
-                    // fontWeight: FontWeight.bold
                   ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
@@ -153,14 +161,33 @@ class _SelectArtistState extends State<SelectArtist> {
               ],
             ),
           ),
-
           SizedBox(height: 20),
-          // List of artists
           Column(
-            children: trendingArtists.map((artist) {
+            children: artist.map((artist) {
+              String photoPath = artist['image'];
+
+              Widget imageWidget;
+              if (photoPath.startsWith('assets/images')) {
+                imageWidget = Image.asset(
+                  fit: boxFit.cover,
+                  photoPath,
+                  height: 250,
+                );
+              } else if (photoPath.startsWith(
+                  '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+                imageWidget = Image.file(
+                  fit: boxFit.cover,
+                  File(photoPath),
+                  height: 250,
+                );
+              } else {
+                imageWidget = Placeholder();
+              }
               return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: AssetImage(artist['image']),
+                leading: Container(
+                  width: 50, // Set the width and height as needed
+                  height: 50,
+                  child: imageWidget,
                 ),
                 title: Text(artist['name']),
                 subtitle:

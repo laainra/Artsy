@@ -41,7 +41,7 @@ class DBHelper {
 
   Future<Database> initDB() async {
     try {
-      String path = join(await getDatabasesPath(), 'artsydb3');
+      String path = join(await getDatabasesPath(), 'artsy_database');
       return await openDatabase(path, version: 1, onCreate: _createDB);
     } catch (e) {
       print('Database opening error: $e');

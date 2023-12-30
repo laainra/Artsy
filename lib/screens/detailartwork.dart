@@ -1,10 +1,14 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/screens/payment.dart';
 import 'dart:io';
+import 'package:artsy_prj/components/priceFormat.dart';
 
 class DetailArtworkPage extends StatefulWidget {
+  final UserModel? user;
   final Map<String, dynamic> artworkDetails;
-  const DetailArtworkPage({Key? key, required this.artworkDetails})
+  const DetailArtworkPage(
+      {Key? key, required this.artworkDetails, required this.user})
       : super(key: key);
 
   @override
@@ -34,6 +38,28 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
 
   @override
   Widget build(BuildContext context) {
+    String photoPath = widget.artworkDetails['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 250,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 250,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: TextButton(
@@ -103,22 +129,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                                 });
                               },
                               children: [
-                                widget.artworkDetails['photos'] != null
-                                    ? widget.artworkDetails['photos']
-                                            .startsWith('assets/images')
-                                        ? Image.asset(
-                                            widget.artworkDetails['photos'],
-                                            height: 120,
-                                          )
-                                        : Image.file(
-                                            File(widget
-                                                .artworkDetails['photos']),
-                                            height: 120,
-                                          )
-                                    : Image.asset(
-                                        'assets/images/art1.png',
-                                        height: 120,
-                                      )
+                                imageWidget
                               ],
                             ),
                           ),
@@ -151,7 +162,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  widget.artworkDetails['artistName'] +
+                  widget.artworkDetails['artistName']! +
                       ", " +
                       widget.artworkDetails['year'].toString(),
                   style: TextStyle(fontSize: 16, color: Colors.black),
@@ -469,7 +480,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 25),
                   child: Text(
-                    widget.artworkDetails['price'],
+                    PriceFormatter.formatPrice(widget.artworkDetails['price']),
                     textAlign: TextAlign.left,
                     style: TextStyle(color: Colors.black, fontSize: 28),
                   ),
@@ -521,6 +532,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => PurchasePage(
+                                user: widget.user,
                                 // Pass relevant details to the payment page if needed
                                 artworkDetails: widget.artworkDetails,
                               ),

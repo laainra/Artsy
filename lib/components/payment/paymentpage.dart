@@ -2,11 +2,14 @@ import 'package:artsy_prj/components/payment/wirepaymentdetails.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/ccpaymentdetail.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
 import 'package:artsy_prj/components/payment/bankpaymentdetails.dart';
+import 'package:artsy_prj/components/priceFormat.dart';
+import 'dart:io';
 
 class PaymentPage extends StatefulWidget {
   // final Function(PaymentInfo, ShippingInfo) onSaveAndContinue;
@@ -14,6 +17,7 @@ class PaymentPage extends StatefulWidget {
   final Function(PaymentInfo) onSaveAndContinue;
   final Map<String, dynamic> artwork;
   final ShippingInfo? shipping;
+  final UserModel? user;
 
   const PaymentPage({
     Key? key,
@@ -21,6 +25,7 @@ class PaymentPage extends StatefulWidget {
     required this.artwork,
     required this.onSaveAndContinue,
     required this.tabController,
+    required this.user,
   }) : super(key: key);
   // Define onSaveAndContinue method and paymentInfo variable
 
@@ -286,6 +291,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     child: Column(
                       children: [
                         BankForm(
+                          user: widget.user,
                           artwork: widget.artwork,
                           shipping: widget.shipping,
                           tabController: widget.tabController,
@@ -298,6 +304,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     child: Column(
                       children: [
                         CCForm(
+                          user: widget.user,
                           artwork: widget.artwork,
                           shipping: widget.shipping,
                           tabController: widget.tabController,
@@ -311,6 +318,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     child: Column(
                       children: [
                         WireForm(
+                          user: widget.user,
                           artwork: widget.artwork,
                           shipping: widget.shipping,
                           tabController: widget.tabController,

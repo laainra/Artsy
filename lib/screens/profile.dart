@@ -102,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage>
                                     style: TextStyle(fontSize: 19),
                                   ),
                                 Text(
-                                  "Member since ${widget.user.createdAt != null ? DateTime.parse(widget.user.createdAt!).year : 'Unknown'}",
+                                  "Member since ${widget.user.createdAt != null ? DateTime.parse(widget.user.createdAt!).year : '2023'}",
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey,

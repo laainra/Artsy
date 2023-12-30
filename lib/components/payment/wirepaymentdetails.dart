@@ -1,19 +1,24 @@
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
+import 'package:artsy_prj/components/priceFormat.dart';
+import 'dart:io';
 
 class WireForm extends StatefulWidget {
   final Map<String, dynamic> artwork;
   final ShippingInfo? shipping;
   final Function(PaymentInfo) onSavePayment;
   final TabController tabController;
+  final UserModel? user;
   const WireForm({
     Key? key,
     required this.artwork,
     required this.shipping,
     required this.onSavePayment,
     required this.tabController,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -23,6 +28,27 @@ class WireForm extends StatefulWidget {
 class _WireFormState extends State<WireForm> {
   final String paymentMethod = "Wire Transfer";
   Widget buildArtworkInfo() {
+    String photoPath = widget.artwork['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
     return Container(
       width: 365,
       decoration: BoxDecoration(
@@ -30,14 +56,15 @@ class _WireFormState extends State<WireForm> {
           color: Colors.grey,
         ),
       ),
+      // margin: EdgeInsets.all(10),
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.asset(widget.artwork["image"][0], height: 100),
+            imageWidget,
             SizedBox(height: 10),
-            Text(widget.artwork["artist"]),
+            Text(widget.artwork["artistName"]!),
             SizedBox(height: 10),
             Text(
               widget.artwork["title"] +
@@ -49,14 +76,13 @@ class _WireFormState extends State<WireForm> {
               ),
             ),
             SizedBox(height: 10),
-            Text(
-              widget.artwork["gallery"],
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(widget.artwork['galleryName'] ?? 'Unknown Gallery',
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + widget.artwork["price"]),
+            Text(
+                "Price " + PriceFormatter.formatPrice(widget.artwork['price'])),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -69,10 +95,13 @@ class _WireFormState extends State<WireForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text(widget.artwork["price"],
+                  child: Text(
+                      PriceFormatter.formatPrice(widget.artwork['price']),
                       style: TextStyle(color: Colors.grey)))
             ]),
-            SizedBox(height: 10),
+            SizedBox(
+              height: 10,
+            ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Container(
                   width: 80,
@@ -82,10 +111,12 @@ class _WireFormState extends State<WireForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(PriceFormatter.formatPrice(widget.shipping!.shippingPrice.toString()) ?? 'No Shipping Fee',
                       style: TextStyle(color: Colors.grey)))
             ]),
-            SizedBox(height: 10),
+            SizedBox(
+              height: 10,
+            ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Container(
                   width: 80,
@@ -98,7 +129,9 @@ class _WireFormState extends State<WireForm> {
                   child: Text("Calculated in next steps",
                       style: TextStyle(color: Colors.grey)))
             ]),
-            SizedBox(height: 10),
+            SizedBox(
+              height: 10,
+            ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Container(
                   width: 80,
@@ -111,22 +144,21 @@ class _WireFormState extends State<WireForm> {
                   child: Text("Waiting for final costs",
                       style: TextStyle(color: Colors.grey)))
             ]),
-            SizedBox(height: 15),
+            SizedBox(
+              height: 15,
+            ),
             RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                ),
-                children: [
+                text: TextSpan(
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                    ),
+                    children: [
                   TextSpan(text: "*Additional duties and taxes "),
                   TextSpan(
-                    text: "may apply at import ",
-                    style: TextStyle(decoration: TextDecoration.underline),
-                  ),
-                ],
-              ),
-            ),
+                      text: "may apply at import ",
+                      style: TextStyle(decoration: TextDecoration.underline)),
+                ])),
             SizedBox(height: 10),
             // Add more details as needed
           ],

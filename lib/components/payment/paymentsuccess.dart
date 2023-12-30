@@ -5,6 +5,8 @@ import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
 import 'dart:math';
+import 'package:artsy_prj/components/priceFormat.dart';
+import 'dart:io';
 
 class PaymentSuccessPage extends StatelessWidget {
   final ShippingInfo? shipping;
@@ -18,7 +20,28 @@ class PaymentSuccessPage extends StatelessWidget {
     required this.payment,
   }) : super(key: key);
 
-  Widget buildArtworkInfo() {
+   Widget buildArtworkInfo() {
+    String photoPath = artwork['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
     return Container(
       width: 365,
       decoration: BoxDecoration(
@@ -32,26 +55,27 @@ class PaymentSuccessPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.asset(artwork["image"][0], height: 100),
+            imageWidget,
             SizedBox(height: 10),
-            Text(artwork["artist"]),
+            Text(artwork["artistName"]!),
             SizedBox(height: 10),
             Text(
-              artwork["title"] + ", " + artwork["year"].toString(),
+              artwork["title"] +
+                  ", " +
+                  artwork["year"].toString(),
               style: TextStyle(
                 color: Colors.grey,
                 fontStyle: FontStyle.italic,
               ),
             ),
             SizedBox(height: 10),
-            Text(
-              artwork["gallery"],
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(artwork['galleryName'] ?? 'Unknown Gallery',
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + artwork["price"]),
+            Text(
+                "Price " + PriceFormatter.formatPrice(artwork['price'])),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -64,7 +88,8 @@ class PaymentSuccessPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text(artwork["price"],
+                  child: Text(
+                      PriceFormatter.formatPrice(artwork['price']),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -151,7 +176,7 @@ class PaymentSuccessPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Congratulations! This artwork will be addes to your Collection once the gallery confirms the order.",
+                "Congratulations! This artwork will be address to your Collection once the gallery confirms the order.",
                 style:
                     TextStyle(overflow: TextOverflow.clip, color: Colors.blue),
               ),
