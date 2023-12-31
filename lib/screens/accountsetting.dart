@@ -1,4 +1,5 @@
 import 'package:artsy_prj/model/usermodel.dart';
+import 'package:artsy_prj/dbhelper.dart';
 import 'package:flutter/material.dart';
 
 class AccountSettings extends StatefulWidget {
@@ -210,7 +211,7 @@ class _AccountSettingsState extends State<AccountSettings> {
           ),
           TextButton(
               onPressed: () {
-                //
+                showDeleteConfirmation(widget.user);
               },
               child: Text(
                 "Delete My Acoount",
@@ -218,6 +219,56 @@ class _AccountSettingsState extends State<AccountSettings> {
               ))
         ],
       ),
+    );
+  }
+
+  void handleDelete(UserModel user) async {
+    //
+    int id = user.id!; //
+    var dbHelper = DBHelper(); //
+    dbHelper.deleteUser(id); //
+    setState(() {}); //
+  }
+
+  void showDeleteConfirmation(UserModel user) {
+    //
+    showDialog(
+      //
+      context: context, //
+      builder: (BuildContext context) {
+        //
+        return AlertDialog(
+          //
+          title: Text("Delete User"), //
+          content: Text("Are you sure you want to delete this account?"), //
+          actions: [
+            //
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40.0),
+                ),
+                // Add a margin of 20 to all edges
+              ),
+              onPressed: () {
+                //
+                handleDelete(user); //
+                Navigator.pop(context); //
+              },
+              child: Text('Delete'), //
+            ),
+            TextButton(
+              //
+              onPressed: () {
+                //
+                Navigator.pop(context); //
+              },
+              child: Text('Cancel'), //
+            ),
+          ],
+        );
+      },
     );
   }
 }

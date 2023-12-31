@@ -29,11 +29,17 @@ class BankForm extends StatefulWidget {
 
 class _BankFormState extends State<BankForm> {
   final fullNameController = TextEditingController();
-
   final emailController = TextEditingController();
   final bankController = TextEditingController();
   bool saveBankForLaterUse = false;
   // String selectedPaymentMethod = "Bank Transfer";
+  @override
+  void initState() {
+    super.initState();
+    fullNameController.text = widget.shipping?.fullName ?? '';
+    emailController.text = widget.shipping?.email ?? '';
+    // Set initial values for TextFields
+  }
 
   bool isFormFilled() {
     return fullNameController.text.isNotEmpty &&
@@ -41,7 +47,9 @@ class _BankFormState extends State<BankForm> {
         bankController.text.isNotEmpty; // Add this line
   }
 
-   Widget buildArtworkInfo() {
+  
+
+  Widget buildArtworkInfo() {
     String photoPath = widget.artwork['photos'];
 
     Widget imageWidget;
@@ -125,7 +133,10 @@ class _BankFormState extends State<BankForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text(PriceFormatter.formatPrice(widget.shipping!.shippingPrice.toString()) ?? 'No Shipping Fee',
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                              widget.shipping!.shippingPrice.toString()) ??
+                          'No Shipping Fee',
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -334,9 +345,13 @@ class _BankFormState extends State<BankForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        buildTextField("Email", emailController, "Your Email"),
-        buildTextField("Full Name", fullNameController, "Your Full Name"),
-        buildTextField("Bank Account", bankController, "Your Bank Account"),
+        buildTextField("Email", emailController, emailController.text.isNotEmpty
+                    ? widget.shipping?.email ?? "Enter Email"
+                    : "Enter Email"),
+        buildTextField("Full Name", fullNameController, fullNameController.text.isNotEmpty
+                    ? widget.shipping?.fullName ?? "Enter Email"
+                    : "Enter Email"),
+        buildTextField("Bank Account", bankController, "Enter Bank Account (Bank Name)"),
         Row(
           children: [
             Checkbox(
@@ -355,18 +370,37 @@ class _BankFormState extends State<BankForm> {
   }
 
   Widget buildTextField(
-      String label, TextEditingController controller, String hint) {
+      String label, TextEditingController controller,String hint, ) {
+    bool isHintFilled = controller.text.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(),
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 13),
+          ),
+          SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            style: TextStyle(color: isHintFilled ? Colors.black : Colors.grey),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: controller.text.isNotEmpty ? Colors.black : Colors.grey,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(),
+            ),
+            onTap: () {
+              setState(() {
+                isHintFilled = controller.text.isNotEmpty;
+              });
+            },
+          ),
+        ],
       ),
     );
   }

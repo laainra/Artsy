@@ -32,15 +32,15 @@ class _ShippingFormState extends State<ShippingForm> {
   bool isShippingSelected = true;
   bool isPrioritySelected = false;
   bool isStandartSelected = false;
-  String selectedCountry = '';
+  String? selectedCountry = '';
   bool saveAddressForLaterUse = false;
   String selectedDeliveryMethod = '';
   String selectedShippingOption = '';
-  int selectedShippingPrice = 0;
+  double selectedShippingPrice = 0.0;
 
   bool isFormFilled() {
     return fullNameController.text.isNotEmpty &&
-        selectedCountry.isNotEmpty &&
+
         addressLine1Controller.text.isNotEmpty &&
         addressLine2Controller.text.isNotEmpty &&
         cityController.text.isNotEmpty &&
@@ -88,7 +88,7 @@ class _ShippingFormState extends State<ShippingForm> {
   }
 // ...
 
-  Widget buildShippingOption(String title, String description, int price,
+  Widget buildShippingOption(String title, String description, double price,
       {bool underline = false, bool isActive = false}) {
     return InkWell(
       onTap: () {
@@ -349,14 +349,15 @@ class _ShippingFormState extends State<ShippingForm> {
       ),
     );
   }
-
 Widget buildDropdown(
   String label,
-  String selectedValue,
+  String? selectedValue,
   bool isRequired,
   double? width,
   List<String> items,
 ) {
+  String? selectedCountry = items.isNotEmpty ? items.first : null;
+
   return Container(
     width: width,
     padding: const EdgeInsets.only(bottom: 10.0),
@@ -380,7 +381,7 @@ Widget buildDropdown(
         ),
         SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: selectedValue,
+          value: selectedCountry,
           hint: Text('Select'),
           decoration: InputDecoration(
             hintText: "Select",
@@ -390,9 +391,12 @@ Widget buildDropdown(
             border: OutlineInputBorder(),
           ),
           onChanged: (val) {
-            setState(() {
-              selectedCountry = val!;
-            });
+            // Ensure that the selected value is within the list of items
+            if (items.contains(val)) {
+              setState(() {
+                selectedCountry = val;
+              });
+            }
           },
           items: items.map((item) {
             return DropdownMenuItem<String>(
@@ -530,14 +534,10 @@ Widget buildDropdown(
                             alignment: Alignment.topRight,
                             child: Column(
                               children: [
-                                Text(
-                                  "What is this?",
-                                  style: TextStyle(fontSize: 13),
-                                  textAlign: TextAlign.right,
-                                ),
-                                buildTextField("Email", emailController),
+                                buildTextField("Full Name", fullNameController, TextInputType.name),
+                                buildTextField("Email", emailController, TextInputType.emailAddress),
                                 buildTextField(
-                                    "Phone Number", phoneNumberController)
+                                    "Phone Number", phoneNumberController,TextInputType.phone)
                               ],
                             )),
                       ),
@@ -607,6 +607,7 @@ Widget buildDropdown(
               onPressed: () {
                 ShippingInfo shippingInfo = ShippingInfo(
                   fullName: fullNameController.text,
+                  email: emailController.text,
                   country: selectedCountry,
                   addressLine1: addressLine1Controller.text,
                   addressLine2: addressLine2Controller.text,
@@ -724,7 +725,7 @@ Widget buildDropdown(
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        buildTextField("Full Name", fullNameController),
+        buildTextField("Full Name", fullNameController, TextInputType.name),
         buildDropdown(
           "Country",
           selectedCountry,
@@ -753,12 +754,13 @@ Widget buildDropdown(
         SizedBox(
           height: 10,
         ),
-        buildTextField("Address Line 1", addressLine1Controller),
-        buildTextField("Address Line 2 (Optional)", addressLine2Controller),
-        buildTextField("City", cityController),
-        buildTextField("State/Province/Region", stateController),
-        buildTextField("Postal Code", postalController),
-        buildTextField("Phone Number", phoneNumberController),
+        buildTextField("Address Line 1", addressLine1Controller,TextInputType.text),
+        buildTextField("Address Line 2 (Optional)", addressLine2Controller,TextInputType.text),
+        buildTextField("City", cityController,TextInputType.text),
+        buildTextField("State/Province/Region", stateController,TextInputType.text),
+        buildTextField("Postal Code", postalController, TextInputType.number),
+        buildTextField("Email", emailController, TextInputType.emailAddress),
+        buildTextField("Phone Number", phoneNumberController, TextInputType.phone),
         Row(
           children: [
             Checkbox(
@@ -776,10 +778,11 @@ Widget buildDropdown(
     );
   }
 
-  Widget buildTextField(String label, TextEditingController controller) {
+  Widget buildTextField(String label, TextEditingController controller,TextInputType keyboard) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: TextField(
+        keyboardType: keyboard,
         controller: controller,
         decoration: InputDecoration(
           labelText: label,

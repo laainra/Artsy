@@ -395,6 +395,7 @@ class _CCFormState extends State<CCForm> {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
         child: TextField(
+          keyboardType: TextInputType.number,
           controller: controller,
           decoration: InputDecoration(
             labelText: label,

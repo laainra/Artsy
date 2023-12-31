@@ -31,7 +31,7 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
-   Widget buildArtworkInfo() {
+  Widget buildArtworkInfo() {
     String photoPath = widget.artwork['photos'];
 
     Widget imageWidget;
@@ -115,7 +115,10 @@ class _ReviewPageState extends State<ReviewPage> {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                              widget.shipping!.shippingPrice.toString()) ??
+                          'No Shipping Fee',
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -130,7 +133,8 @@ class _ReviewPageState extends State<ReviewPage> {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(
+                      PriceFormatter.formatPrice(taxAmount().toString()),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -145,7 +149,9 @@ class _ReviewPageState extends State<ReviewPage> {
                   )),
               Container(
                   width: 200,
-                  child: Text("Waiting for final costs",
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                          calculateTotalAmount().toString()),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -223,13 +229,20 @@ class _ReviewPageState extends State<ReviewPage> {
         ? (widget.shipping!.shippingPrice as double?) ?? 0.0
         : 0.0;
 
-    // Add any additional costs or calculations here
-    double additionalCosts = 0.0;
-
-    // Calculate the total amount
-    double totalAmount = artworkPrice + shippingCost + additionalCosts;
+    double totalAmount = artworkPrice + shippingCost + taxAmount();
 
     return totalAmount;
+  }
+
+  double taxAmount() {
+    double artworkPrice = double.parse(widget.artwork["price"]);
+    double shippingCost = widget.shipping != null
+        ? (widget.shipping!.shippingPrice as double?) ?? 0.0
+        : 0.0;
+
+    double tax = 0.11 * (artworkPrice + shippingCost);
+
+    return tax;
   }
 
   @override
@@ -451,42 +464,50 @@ class _ReviewPageState extends State<ReviewPage> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
+                  String paymentDescription = '';
+
+                  if (widget.payment?.bankAcc != null) {
+                    // If bankAcc is not null, display the bankAcc
+                    paymentDescription = widget.payment?.bankAcc ?? '';
+                  } else if (widget.payment?.numberCard != null) {
+                    // If bankAcc is null but numberCard is not null, display the numberCard
+                    paymentDescription = widget.payment?.numberCard ?? '';
+                  } else {
+                    // If both bankAcc and numberCard are null, display "Cash on Wire Transfer"
+                    paymentDescription = 'Cash on Wire Transfer';
+                  }
+
+                  String fullPaymentMethodDescription =
+                      'paymentMethod: ${widget.payment?.paymentMethod}, paymentDescription: $paymentDescription';
+
                   final TransactionModel transaction = TransactionModel(
-                    userId: widget.user?.id as int, // Assuming userId is an int
-                    artworkId: widget.artwork['id']
-                        as int, // Set the artwork ID accordingly
-                    paymentMethod: widget.payment?.paymentMethod,
-                    amount:
-                        calculateTotalAmount().toString(), // Implement this method to calculate the total amount
-                    status:
-                        'Pending', // You can set the initial status as needed
+                    artworkId: widget.artwork['id'] != null
+                        ? int.tryParse(widget.artwork['id'].toString()) ?? 0
+                        : 0, // Set the artwork ID accordingly
+                    paymentMethod: fullPaymentMethodDescription,
+                    amount: PriceFormatter.formatPrice(calculateTotalAmount()
+                        .toString()), // Implement this method to calculate the total amount
+                    status: 'Pending',
                     shippingMethod: widget.shipping?.shippingMethod,
+                    name: widget.shipping?.fullName,
+                    email: widget.shipping?.email,
+                    phoneNumber: widget.shipping?.phoneNumber,
                     description: 'Artwork Purchase',
                     address: widget.shipping != null
                         ? '${widget.shipping!.fullName}, ${widget.shipping!.phoneNumber}, ${widget.shipping!.addressLine1}, ${widget.shipping!.city}, ${widget.shipping!.state} ${widget.shipping!.postalCode}, ${widget.shipping!.country}'
                         : 'Pick up at Gallery', // Set the address based on shipping or pick up
                     createdAt: DateTime.now().toString(),
                   );
-                  print('Transaction userId: ${transaction.userId}');
-                  print('Transaction artworkId: ${transaction.artworkId}');
-                  print(
-                      'Transaction paymentMethod: ${transaction.paymentMethod}');
-                  print('Transaction amount: ${transaction.amount}');
-                  print('Transaction status: ${transaction.status}');
-                  print(
-                      'Transaction shippingMethod: ${transaction.shippingMethod}');
-                  print('Transaction description: ${transaction.description}');
-                  print('Transaction address: ${transaction.address}');
-                  print('Transaction createdAt: ${transaction.createdAt}');
                   // Insert the transaction into the database
                   final DBHelper dbHelper = DBHelper();
                   // final int transactionId =
-                      await dbHelper.insertTransaction(transaction);
+                  await dbHelper.insertTransaction(transaction);
 
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => PaymentSuccessPage(
+                          user:widget.user,
                               shipping: widget.shipping,
                               artwork: widget.artwork,
                               payment: widget.payment,

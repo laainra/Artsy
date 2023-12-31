@@ -3,6 +3,7 @@ import 'package:artsy_prj/screens/addartist.dart';
 import 'package:artsy_prj/screens/addartwork.dart';
 import 'package:artsy_prj/screens/admin/editoriallist.dart';
 import 'package:artsy_prj/screens/admin/gallerylist.dart';
+import 'package:artsy_prj/screens/admin/transactionlist.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
 import 'package:artsy_prj/screens/editprofile.dart';
 import 'package:artsy_prj/screens/info.dart';
@@ -35,6 +36,7 @@ final routes = {
   '/artwork-list': (context) => ArtworkListPage(),
   '/gallery-list': (context) => GalleryListPage(),
   '/editorial-list': (context) => EditorialListPage(),
+  '/transaction-list': (context) => TransactionListPage(),
   '/user-bid': (context) => UserBidPage(),
   '/notif': (context) => NotifPage(),
   '/info': (context) => InfoPage(),

@@ -1,8 +1,10 @@
 class TransactionModel {
   final int? id;
-  final int? userId;
   final int? artworkId;
   final String? paymentMethod;
+  final String? name;
+  final String? phoneNumber;
+  final String? email;
   final String? amount;
   final String? status;
   final String? shippingMethod;
@@ -12,9 +14,11 @@ class TransactionModel {
 
   TransactionModel({
     this.id,
-    this.userId,
     this.artworkId,
     this.paymentMethod,
+    this.name,
+    this.phoneNumber,
+    this.email,
     this.amount,
     this.status,
     this.shippingMethod,
@@ -26,9 +30,11 @@ class TransactionModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'userId': userId,
       'artworkId': artworkId,
       'paymentMethod': paymentMethod,
+      'name': name,
+      'phoneNumber': phoneNumber,
+      'email': email,
       'amount': amount,
       'status': status,
       'shippingMethod': shippingMethod,
@@ -41,9 +47,11 @@ class TransactionModel {
   factory TransactionModel.fromMap(Map<String, dynamic> json) {
     return TransactionModel(
       id: json['id'],
-      userId: json['userId'],
       artworkId: json['artworkId'],
       paymentMethod: json['paymentMethod'],
+      name: json['name'],
+      phoneNumber: json['phoneNumber'],
+      email: json['email'],
       amount: json['amount'],
       status: json['status'],
       shippingMethod: json['shippingMethod'],

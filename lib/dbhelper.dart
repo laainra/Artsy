@@ -41,7 +41,7 @@ class DBHelper {
 
   Future<Database> initDB() async {
     try {
-      String path = join(await getDatabasesPath(), 'artsy_database');
+      String path = join(await getDatabasesPath(), 'Artsy-DB');
       return await openDatabase(path, version: 1, onCreate: _createDB);
     } catch (e) {
       print('Database opening error: $e');
@@ -169,16 +169,17 @@ class DBHelper {
       await db.execute('''
           CREATE TABLE $transactionTable(
             id INTEGER PRIMARY KEY,
-            userId INTEGER,
             artworkId INTEGER,
             paymentMethod TEXT,
+            name TEXT,
+            phoneNumber TEXT,
+            email TEXT,
             amount REAL,
             status TEXT,
             address TEXT,
             shippingMethod TEXT,
             description TEXT,
             createdAt TEXT,
-            FOREIGN KEY (userId) REFERENCES $userTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION,
             FOREIGN KEY (artworkId) REFERENCES $artworkTable(id) ON DELETE NO ACTION ON UPDATE NO ACTION
 
           )
@@ -199,7 +200,6 @@ class DBHelper {
       rethrow;
     }
   }
-  
 
   Future<List<Map<String, dynamic>>> getAllArtworksWithDetails() async {
     try {
@@ -210,17 +210,69 @@ class DBHelper {
       SELECT 
         artworks.*, 
         artists.name AS artistName, 
-        galleries.name AS galleryName 
+        artists.nationality AS artistNationality, 
+        artists.birthYear AS artistBirthYear, 
+        artists.photo AS artistPhoto, 
+        galleries.name AS galleryName,
+        galleries.location AS galleryLocation,
+        galleries.photo AS galleryPhoto
       FROM 
         artworks 
         LEFT JOIN artists ON artworks.artistId = artists.id 
-        LEFT JOIN galleries ON artworks.galleryId = galleries.id
+        LEFT JOIN galleries ON artworks.galleryId = galleries.id;
     ''');
 
       return result;
     } catch (e) {
       print('Error retrieving artwork details: $e');
       return [];
+    }
+  }
+
+Future<List<Map<String, dynamic>>> getAllTransactionsWithDetails() async {
+  try {
+    final db = await database;
+
+    // Perform a join operation to get artist and gallery names
+    final result = await db.rawQuery('''
+      SELECT 
+        transactions.*, 
+        artworks.title AS artworkTitle, 
+        artworks.galleryId AS artworkGallery, 
+        artworks.artistId AS artworkArtist, 
+        artworks.photos AS artworkPhoto
+      FROM 
+        artworks 
+      LEFT JOIN transactions ON transactions.artworkId = artworks.id 
+    ''');
+
+    // Handle null values
+    final processedResult = result.map((row) {
+      return row.map((key, value) {
+        // Replace null values with an appropriate default value
+        return MapEntry(key, value ?? 'N/A');
+      });
+    }).toList();
+
+    return processedResult;
+  } catch (e) {
+    print('Error retrieving artwork details: $e');
+    return [];
+  }
+}
+
+  Future<void> updateTransactionStatus(
+      int transactionId, String newStatus) async {
+    try {
+      final db = await database;
+      await db.update(
+        'transactions',
+        {'status': newStatus},
+        where: 'id = ?',
+        whereArgs: [transactionId],
+      );
+    } catch (e) {
+      print('Error updating transaction status: $e');
     }
   }
 
@@ -243,15 +295,18 @@ class DBHelper {
       return null;
     }
   }
+
   // Add the following method to delete all records from the artworks table
   Future<void> deleteAllArtworks() async {
     final db = await database;
     await db.delete('artworks');
   }
+
   Future<void> deleteAllArtists() async {
     final db = await database;
     await db.delete('artists');
   }
+
   Future<void> deleteAllEditorials() async {
     final db = await database;
     await db.delete('editorials');

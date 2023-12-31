@@ -162,14 +162,17 @@ class _EditProfileState extends State<EditProfile> {
                       color: Colors.grey,
                       borderRadius: BorderRadius.circular(180),
                     ),
-                    child: profileImage == null
+                    child: profileImage != null
                         ? Center(
-                            child: Image.file(
-                            fit: BoxFit.cover,
-                            File(widget.user.profileImage!),
-                            width: 88,
-                            height: 88,
-                          ))
+                            child: ClipOval(
+                              child: Image.file(
+                                width: 88,
+                                height: 88,
+                                fit: BoxFit.cover,
+                                File(widget.user.profileImage ?? ""),
+                              ),
+                            ),
+                          )
                         : Center(child: FlutterLogo()),
                   ),
                   SizedBox(
@@ -369,4 +372,5 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ));
   }
+
 }

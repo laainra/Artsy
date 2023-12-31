@@ -37,85 +37,91 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black45,
-        showSelectedLabels: false, // Hide labels for selected items
-        showUnselectedLabels: false, // Hide labels for unselected items
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+    return WillPopScope(
+        onWillPop: () async {
+          // Navigate back to home page when the back button is pressed
+          Navigator.of(context).popUntil(ModalRoute.withName('/home'));
+          return false; // Return false to prevent default back button behavior
         },
-        items: [
-          BottomNavigationBarItem(
-            label: 'Home', // Add label for Home tab
-            icon: Icon(
-              Icons.home_outlined,
-              color: Colors.black,
-            ),
-            activeIcon: Icon(
-              Icons.home_filled,
-              color: Colors.black,
-            ),
+        child: Scaffold(
+          body: _pages[_currentIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black45,
+            showSelectedLabels: false, // Hide labels for selected items
+            showUnselectedLabels: false, // Hide labels for unselected items
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            items: [
+              BottomNavigationBarItem(
+                label: 'Home', // Add label for Home tab
+                icon: Icon(
+                  Icons.home_outlined,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.home_filled,
+                  color: Colors.black,
+                ),
+              ),
+              BottomNavigationBarItem(
+                label: 'Search', // Add label for Search tab
+                icon: Icon(
+                  Icons.search,
+                  color: Colors.black,
+                  weight: 300,
+                ),
+                activeIcon: Icon(
+                  Icons.search,
+                  color: Colors.black,
+                  weight: 700,
+                ),
+              ),
+              BottomNavigationBarItem(
+                label: 'Comments', // Add label for Comments tab
+                icon: Icon(
+                  Icons.comment_outlined,
+                  color: Colors.black,
+                  weight: 300,
+                ),
+                activeIcon: Icon(
+                  Icons.comment_outlined,
+                  color: Colors.black,
+                  weight: 700,
+                ),
+              ),
+              BottomNavigationBarItem(
+                label: 'Price Tag', // Add label for Price Tag tab
+                icon: Icon(
+                  Icons.local_offer,
+                  color: Colors.black,
+                  weight: 300,
+                ),
+                activeIcon: Icon(
+                  Icons.local_offer,
+                  color: Colors.black,
+                  weight: 700,
+                ),
+              ),
+              BottomNavigationBarItem(
+                label: 'Profile', // Add label for Profile tab
+                icon: Icon(
+                  Icons.person_2_outlined,
+                  color: Colors.black,
+                ),
+                activeIcon: Icon(
+                  Icons.person_2,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            label: 'Search', // Add label for Search tab
-            icon: Icon(
-              Icons.search,
-              color: Colors.black,
-              weight: 300,
-            ),
-            activeIcon: Icon(
-              Icons.search,
-              color: Colors.black,
-              weight: 700,
-            ),
-          ),
-          BottomNavigationBarItem(
-            label: 'Comments', // Add label for Comments tab
-            icon: Icon(
-              Icons.comment_outlined,
-              color: Colors.black,
-              weight: 300,
-            ),
-            activeIcon: Icon(
-              Icons.comment_outlined,
-              color: Colors.black,
-              weight: 700,
-            ),
-          ),
-          BottomNavigationBarItem(
-            label: 'Price Tag', // Add label for Price Tag tab
-            icon: Icon(
-              Icons.local_offer,
-              color: Colors.black,
-              weight: 300,
-            ),
-            activeIcon: Icon(
-              Icons.local_offer,
-              color: Colors.black,
-              weight: 700,
-            ),
-          ),
-          BottomNavigationBarItem(
-            label: 'Profile', // Add label for Profile tab
-            icon: Icon(
-              Icons.person_2_outlined,
-              color: Colors.black,
-            ),
-            activeIcon: Icon(
-              Icons.person_2,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
+        ));
   }
 }
 
@@ -155,7 +161,9 @@ class HomeTab extends StatelessWidget {
             itemCount: 4,
             itemBuilder: (context, index) {
               return [
-                NewWorksSection(user: user,),
+                NewWorksSection(
+                  user: user,
+                ),
                 ExploreSection(),
                 AuctionSection(),
                 EditorialSection()

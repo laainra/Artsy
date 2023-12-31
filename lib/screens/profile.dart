@@ -65,19 +65,26 @@ class _ProfilePageState extends State<ProfilePage>
                             widget.user.profileImage != null
                                 ? Container(
                                     margin: EdgeInsets.only(top: 10),
-                                    width: 30,
-                                    height: 30,
+                                    width: 40,
+                                    height: 40,
                                     decoration: BoxDecoration(
                                       color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(15),
+                                      shape: BoxShape
+                                          .circle, // Menggunakan shape circle untuk membuat gambar bulat
                                     ),
-                                    child: Image.file(
-                                        File(widget.user.profileImage!)),
+                                    child: ClipOval(
+                                      child: Image.file(
+                                        width: 40,
+                                        height: 40,
+                                        fit: BoxFit.cover,
+                                        File(widget.user.profileImage ?? ""),
+                                      ),
+                                    ),
                                   )
                                 : Container(
                                     margin: EdgeInsets.only(top: 10),
-                                    width: 30,
-                                    height: 30,
+                                    width: 40,
+                                    height: 40,
                                     decoration: BoxDecoration(
                                       color: Colors.grey,
                                       borderRadius: BorderRadius.circular(15),

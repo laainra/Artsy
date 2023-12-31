@@ -6,10 +6,11 @@ class ShippingInfo {
   final String? city;
   final String? state;
   final String? postalCode;
+  final String? email;
   final String? phoneNumber;
   final String? shippingMethod;
   final String? shippingOption;
-  final int? shippingPrice;
+  final double? shippingPrice;
   final bool? saveAddressForLaterUse;
 
   ShippingInfo({
@@ -19,6 +20,7 @@ class ShippingInfo {
     this.addressLine2,
     this.city,
     this.state,
+    this.email,
     this.postalCode,
     this.phoneNumber,
     this.saveAddressForLaterUse,
