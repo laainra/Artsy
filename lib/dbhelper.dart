@@ -5,10 +5,9 @@ import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/model/artistmodel.dart';
 import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:artsy_prj/model/gallerymodel.dart';
-import 'package:artsy_prj/model/showmodel.dart';
-import 'package:artsy_prj/model/auctionmodel.dart';
+
 import 'package:artsy_prj/model/editorialmodel.dart';
-import 'package:artsy_prj/model/likemodel.dart';
+
 import 'package:artsy_prj/model/transactionmodel.dart';
 
 class DBHelper {
@@ -616,97 +615,7 @@ Future<List<Map<String, dynamic>>> getAllTransactionsWithDetails() async {
     }
   }
 
-  // Insert a show into the database
-  Future<void> insertShow(ShowModel show) async {
-    try {
-      final db = await database;
-      await db.insert(showTable, show.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    } catch (e) {
-      print('Error inserting show: $e');
-    }
-  }
 
-  // Retrieve a show by ID from the database
-  Future<ShowModel?> getShow(int id) async {
-    try {
-      final db = await database;
-      final List<Map<String, dynamic>> maps =
-          await db.query(showTable, where: 'id = ?', whereArgs: [id]);
-
-      if (maps.isEmpty) {
-        return null;
-      }
-
-      return ShowModel.fromMap(maps.first);
-    } catch (e) {
-      print('Error retrieving show: $e');
-      return null;
-    }
-  }
-
-  // Retrieve all shows from the database
-  Future<List<ShowModel>> getAllShows() async {
-    try {
-      final db = await database;
-      final List<Map<String, dynamic>> maps = await db.query(showTable);
-
-      return List.generate(maps.length, (i) {
-        return ShowModel.fromMap(maps[i]);
-      });
-    } catch (e) {
-      print('Error retrieving all shows: $e');
-      return [];
-    }
-  }
-
-  // Update a show in the database
-  Future<void> updateShow(ShowModel show) async {
-    try {
-      final db = await database;
-      await db.update(showTable, show.toMap(),
-          where: 'id = ?', whereArgs: [show.id]);
-    } catch (e) {
-      print('Error updating show: $e');
-    }
-  }
-
-  // Delete a show by ID from the database
-  Future<void> deleteShow(int id) async {
-    try {
-      final db = await database;
-      await db.delete(showTable, where: 'id = ?', whereArgs: [id]);
-    } catch (e) {
-      print('Error deleting show: $e');
-    }
-  }
-
-  // Insert a like into the database
-  Future<void> insertLike(LikeModel like) async {
-    try {
-      final db = await database;
-      await db.insert(likeTable, like.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    } catch (e) {
-      print('Error inserting like: $e');
-    }
-  }
-
-// Retrieve all likes for a specific artwork
-  Future<List<LikeModel>> getArtworkLikes(int artworkId) async {
-    try {
-      final db = await database;
-      final List<Map<String, dynamic>> maps = await db
-          .query(likeTable, where: 'artwork_id = ?', whereArgs: [artworkId]);
-
-      return List.generate(maps.length, (i) {
-        return LikeModel.fromMap(maps[i]);
-      });
-    } catch (e) {
-      print('Error retrieving artwork likes: $e');
-      return [];
-    }
-  }
 
 // Check if a user has liked a specific artwork
   Future<bool> hasUserLikedArtwork(int userId, int artworkId) async {
@@ -779,69 +688,7 @@ Future<List<Map<String, dynamic>>> getAllTransactionsWithDetails() async {
   // }
 
   // Insert an auction into the database
-  Future<void> insertAuction(AuctionModel auction) async {
-    try {
-      final db = await database;
-      await db.insert(auctionTable, auction.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    } catch (e) {
-      print('Error inserting auction: $e');
-    }
-  }
-
-  // Retrieve an auction by ID from the database
-  Future<AuctionModel?> getAuction(int id) async {
-    try {
-      final db = await database;
-      final List<Map<String, dynamic>> maps =
-          await db.query(auctionTable, where: 'id = ?', whereArgs: [id]);
-
-      if (maps.isEmpty) {
-        return null;
-      }
-
-      return AuctionModel.fromMap(maps.first);
-    } catch (e) {
-      print('Error retrieving auction: $e');
-      return null;
-    }
-  }
-
-  // Retrieve all auctions from the database
-  Future<List<AuctionModel>> getAllAuctions() async {
-    try {
-      final db = await database;
-      final List<Map<String, dynamic>> maps = await db.query(auctionTable);
-
-      return List.generate(maps.length, (i) {
-        return AuctionModel.fromMap(maps[i]);
-      });
-    } catch (e) {
-      print('Error retrieving all auctions: $e');
-      return [];
-    }
-  }
-
-  // Update an auction in the database
-  Future<void> updateAuction(AuctionModel auction) async {
-    try {
-      final db = await database;
-      await db.update(auctionTable, auction.toMap(),
-          where: 'id = ?', whereArgs: [auction.id]);
-    } catch (e) {
-      print('Error updating auction: $e');
-    }
-  }
-
-  // Delete an auction by ID from the database
-  Future<void> deleteAuction(int id) async {
-    try {
-      final db = await database;
-      await db.delete(auctionTable, where: 'id = ?', whereArgs: [id]);
-    } catch (e) {
-      print('Error deleting auction: $e');
-    }
-  }
+ 
 
   // Insert an editorial into the database
   Future<void> insertEditorial(EditorialModel editorial) async {

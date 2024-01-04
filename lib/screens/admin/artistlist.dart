@@ -44,6 +44,8 @@ class _ArtistListState extends State<ArtistList> {
   List<Map<String, dynamic>> artist = [];
   String? photoprofile;
 
+  
+
   void refreshData() async {
     final data = await dbHelper.getAllArtists();
     setState(() {

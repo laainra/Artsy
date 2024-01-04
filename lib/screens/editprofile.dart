@@ -1,5 +1,6 @@
 import 'package:artsy_prj/dbhelper.dart';
 import 'package:artsy_prj/model/usermodel.dart';
+import 'package:artsy_prj/screens/home.dart';
 import 'package:artsy_prj/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -350,7 +351,7 @@ class _EditProfileState extends State<EditProfile> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProfilePage(
+                      builder: (context) => HomePage(
                         user: updatedUser, // Pass the updated user to Settings
                       ),
                     ),

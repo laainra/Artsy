@@ -16,7 +16,7 @@ class AuctionSectionState extends State<AuctionSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "New Works for You",
+              "Auctions",
               style: TextStyle(fontSize: 16),
             ),
             Text(
@@ -53,8 +53,8 @@ class AuctionCard extends StatelessWidget {
               children: [
                 Container(
                   margin: EdgeInsets.all(10),
-                  child: Image.network(
-                    "https://placekitten.com/180/120", // Replace with actual image URL
+                  child: Image.asset(
+                    "assets/images/art3.png", // Replace with actual image URL
                     height: 150,
                     width: 150,
                     fit: BoxFit.cover,
@@ -63,19 +63,18 @@ class AuctionCard extends StatelessWidget {
                 SizedBox(height: 10),
                 Column(
                   children: [
-                    Image.network(
-                      "https://placekitten.com/180/120", // Replace with actual image URL
+                    Image.asset(
+                      "assets/images/art4.png", // Replace with actual image URL
                       height: 70,
                       width: 70,
 
                       fit: BoxFit.cover,
                     ),
                     SizedBox(height: 10),
-                    Image.network(
-                      "https://placekitten.com/180/120", // Replace with actual image URL
+                    Image.asset(
+                      "assets/images/art5.png", // Replace with actual image URL
                       height: 70,
                       width: 70,
-
                       fit: BoxFit.cover,
                     ),
                   ],
