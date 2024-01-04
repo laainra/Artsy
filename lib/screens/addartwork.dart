@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:artsy_prj/model/artistmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -146,7 +148,7 @@ class _AddArtworksState extends State<AddArtworks> {
     }
   }
 
-   Future<String> getFilePicker() async {
+  Future<String> getFilePicker() async {
     //
     // Fungsi untuk memilih file
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -190,7 +192,7 @@ class _AddArtworksState extends State<AddArtworks> {
   }
 
   Widget buildTextField(String label, String hint,
-      TextEditingController controller, bool isRequired, double? width) {
+      TextEditingController controller, bool isRequired, double? width, TextInputType keyboard) {
     return Container(
         width: width,
         padding: const EdgeInsets.only(bottom: 10.0),
@@ -215,6 +217,7 @@ class _AddArtworksState extends State<AddArtworks> {
             ),
             SizedBox(height: 8),
             TextField(
+              keyboardType: keyboard,
               controller: controller,
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
@@ -286,8 +289,86 @@ class _AddArtworksState extends State<AddArtworks> {
     );
   }
 
+  Widget galleryDropdown() {
+    return Container(
+      width: 370,
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                "GALLERY",
+                style: TextStyle(fontSize: 13),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              // if (isRequired)
+              //   Text(
+              //     "Required",
+              //     style: TextStyle(fontSize: 12, color: Colors.grey),
+              //   ),
+            ],
+          ),
+          SizedBox(height: 8),
+          DropdownButtonFormField<int>(
+            value: selectedGallery,
+            hint: Text('Select Gallery'),
+            onChanged: (value) {
+              setState(() {
+                selectedGallery = value;
+              });
+            },
+            items: galleriesData.map((gallery) {
+              return DropdownMenuItem<int>(
+                value: gallery['id'],
+                child: Text(gallery['name']),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final imagePath = widget.artist["photo"] ??
+        ''; // Assuming "photo" contains the image path
+
+    Widget leadingWidget;
+
+    if (imagePath.isNotEmpty) {
+      final imageFile = File(imagePath);
+
+      if (imageFile.existsSync()) {
+        leadingWidget = Image.file(
+          imageFile,
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+        );
+      } else {
+        print('File does not exist: $imagePath');
+        // Handle the case where the file doesn't exist, you might want to provide a default image or show an error icon
+        leadingWidget = Icon(Icons.error, size: 50);
+      }
+    } else {
+      // Assuming "photo" is an asset path if not a file path
+      try {
+        leadingWidget = Image.asset(
+          imagePath,
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+        );
+      } catch (e) {
+        print('Error loading asset: $imagePath');
+        // Handle the case where the asset can't be loaded, you might want to provide a default image or show an error icon
+        leadingWidget = Icon(Icons.error, size: 50);
+      }
+    }
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -320,15 +401,11 @@ class _AddArtworksState extends State<AddArtworks> {
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(180),
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage(widget.artist['image']),
+                  ClipOval(
+                    child: Container(
+                      width: 90, // Set the width and height as needed
+                      height: 90,
+                      child: leadingWidget,
                     ),
                   ),
                   SizedBox(
@@ -349,7 +426,8 @@ class _AddArtworksState extends State<AddArtworks> {
               SizedBox(
                 height: 20,
               ),
-              buildTextField("TITLE", "Title", titleController, true, 370),
+              buildTextField("TITLE", "Title", titleController, true, 370,TextInputType.name
+),
               buildDropdown(
                 "MEDIUM",
                 _selectedMedium!,
@@ -363,9 +441,11 @@ class _AddArtworksState extends State<AddArtworks> {
                 }).toList(),
               ),
               buildTextField(
-                  "YEAR", "Year Created", yearController, false, 370),
+                  "YEAR", "Year Created", yearController, false, 370,TextInputType.number
+),
               buildTextField(
-                  "MATERIALS", "Materials", materialsController, false, 370),
+                  "MATERIALS", "Materials", materialsController, false, 370,TextInputType.text
+),
               buildDropdown(
                 "RARITY",
                 _selectedRarity!,
@@ -388,19 +468,23 @@ class _AddArtworksState extends State<AddArtworks> {
               Row(
                 children: [
                   buildTextField(
-                      "HEIGHT", "Height", heightController, false, 110),
+                      "HEIGHT", "Height", heightController, false, 110,TextInputType.numberWithOptions(decimal: true)
+),
                   SizedBox(
                     width: 10,
                   ),
-                  buildTextField("WIDTH", "Width", widthController, false, 110),
+                  buildTextField("WIDTH", "Width", widthController, false, 110,TextInputType.numberWithOptions(decimal: true)
+),
                   SizedBox(
                     width: 10,
                   ),
-                  buildTextField("DEPTH", "Depth", depthController, false, 110),
+                  buildTextField("DEPTH", "Depth", depthController, false, 110,TextInputType.numberWithOptions(decimal: true)
+),
                 ],
               ),
               buildTextField("PRICE PAIN", "USD\$ Price Paid", priceController,
-                  false, 370),
+                  false, 370,TextInputType.numberWithOptions(decimal: true)
+),
               Container(
                   width: 370,
                   padding: const EdgeInsets.only(bottom: 10.0),
@@ -421,9 +505,10 @@ class _AddArtworksState extends State<AddArtworks> {
                         ],
                       ),
                       SizedBox(height: 8),
-                      TextField(
+                      TextField(keyboardType: TextInputType.multiline,
                         maxLines: null,
                         controller: provenanceController,
+                        selectionHeightStyle: BoxHeightStyle.max,
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
                           hintText: "Describe how you acquired the artwork",
@@ -431,14 +516,13 @@ class _AddArtworksState extends State<AddArtworks> {
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 10),
+
                         ),
                       ),
                     ],
                   )),
               buildTextField("LOCATION", "Enter city where artwork is located",
-                  locationController, false, 370),
+                  locationController, false, 370,TextInputType.text),
               Container(
                   width: 370,
                   padding: const EdgeInsets.only(bottom: 10.0),
@@ -451,7 +535,9 @@ class _AddArtworksState extends State<AddArtworks> {
                       ),
                       SizedBox(height: 8),
                       TextField(
+                        selectionHeightStyle: BoxHeightStyle.max,
                         maxLines: null,
+                        keyboardType: TextInputType.multiline,
                         controller: notesController,
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
@@ -462,12 +548,11 @@ class _AddArtworksState extends State<AddArtworks> {
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 10),
                         ),
                       ),
                     ],
                   )),
+              galleryDropdown(),
               Divider(),
               GestureDetector(
                 onTap: () async {
@@ -491,33 +576,32 @@ class _AddArtworksState extends State<AddArtworks> {
               Divider(),
               ElevatedButton(
                 onPressed: () {
-
-                                        String? photoartwork = photos;
-                      final data = ArtworkModel(
-                        title: titleController.text,
-                        materials: materialsController.text,
-                        provenance: provenanceController.text,
-                        location: locationController.text,
-                        notes: notesController.text,
-                        condition: conditionController.text,
-                        frame: frameController.text,
-                        certificate: certificateController.text,
-                        year: int.parse(yearController.text),
-                        height: double.parse(heightController.text),
-                        width: double.parse(widthController.text),
-                        depth: double.parse(depthController.text),
-                        price: priceController.text,
-                        galleryId: selectedGallery,
-                        artistId: selectedArtist,
-                        rarity: _selectedRarity!,
-                        medium: _selectedMedium!,
-                        photos: photoartwork.toString(),
-                      );
-                      dbHelper.insertArtwork(data);
-                      titleController.text = '';
-                      Navigator.pop(context);
-                      refreshData();
-                      showSnackBar("Add Artwork Successful");
+                  String? photoartwork = photos;
+                  final data = ArtworkModel(
+                    title: titleController.text,
+                    materials: materialsController.text,
+                    provenance: provenanceController.text,
+                    location: locationController.text,
+                    notes: notesController.text,
+                    condition: conditionController.text,
+                    frame: frameController.text,
+                    certificate: certificateController.text,
+                    year: int.parse(yearController.text),
+                    height: double.parse(heightController.text),
+                    width: double.parse(widthController.text),
+                    depth: double.parse(depthController.text),
+                    price: priceController.text,
+                    galleryId: selectedGallery,
+                    artistId: widget.artist['id'],
+                    rarity: _selectedRarity!,
+                    medium: _selectedMedium!,
+                    photos: photoartwork.toString(),
+                  );
+                  dbHelper.insertArtwork(data);
+                  titleController.text = '';
+                  Navigator.pop(context);
+                  refreshData();
+                  showSnackBar("Add Artwork Successful");
                   // Call the callback function to pass shipping information
                   // widget.onSavePayment(paymentInfo);
                   //                     Navigator.push(

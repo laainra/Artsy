@@ -1,21 +1,27 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
+import 'package:artsy_prj/components/priceFormat.dart';
+import 'dart:io';
 
 class CCForm extends StatefulWidget {
   final Map<String, dynamic> artwork;
   final ShippingInfo? shipping;
   final Function(PaymentInfo) onSavePayment;
   final TabController tabController;
+  final UserModel? user;
+
   const CCForm({
     Key? key,
     required this.artwork,
     required this.shipping,
     required this.onSavePayment,
     required this.tabController,
+    required this.user,
   }) : super(key: key);
   @override
   _CCFormState createState() => _CCFormState();
@@ -37,6 +43,27 @@ class _CCFormState extends State<CCForm> {
   }
 
   Widget buildArtworkInfo() {
+    String photoPath = widget.artwork['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
     return Container(
       width: 365,
       decoration: BoxDecoration(
@@ -44,15 +71,15 @@ class _CCFormState extends State<CCForm> {
           color: Colors.grey,
         ),
       ),
-
+      // margin: EdgeInsets.all(10),
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.asset(widget.artwork["image"][0], height: 100),
+            imageWidget,
             SizedBox(height: 10),
-            Text(widget.artwork["artist"]),
+            Text(widget.artwork["artistName"]!),
             SizedBox(height: 10),
             Text(
               widget.artwork["title"] +
@@ -64,14 +91,13 @@ class _CCFormState extends State<CCForm> {
               ),
             ),
             SizedBox(height: 10),
-            Text(
-              widget.artwork["gallery"],
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(widget.artwork['galleryName'] ?? 'Unknown Gallery',
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + widget.artwork["price"]),
+            Text(
+                "Price " + PriceFormatter.formatPrice(widget.artwork['price'])),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -84,7 +110,8 @@ class _CCFormState extends State<CCForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text(widget.artwork["price"],
+                  child: Text(
+                      PriceFormatter.formatPrice(widget.artwork['price']),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -99,7 +126,7 @@ class _CCFormState extends State<CCForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(PriceFormatter.formatPrice(widget.shipping!.shippingPrice.toString())?? 'No Shipping Fee',
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -368,6 +395,7 @@ class _CCFormState extends State<CCForm> {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
         child: TextField(
+          keyboardType: TextInputType.number,
           controller: controller,
           decoration: InputDecoration(
             labelText: label,

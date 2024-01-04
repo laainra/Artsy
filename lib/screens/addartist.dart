@@ -158,7 +158,7 @@ class _AddArtistState extends State<AddArtist> {
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
                     onPressed: () {
-                      //
+                      getFilePicker();
                     },
                   )
                 ],

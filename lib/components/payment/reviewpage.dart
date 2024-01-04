@@ -1,14 +1,21 @@
 import 'package:artsy_prj/components/payment/paymentsuccess.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
+import 'package:artsy_prj/model/transactionmodel.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
+import 'package:artsy_prj/components/priceFormat.dart';
+import 'dart:io';
 
-class ReviewPage extends StatelessWidget {
+import '../../dbhelper.dart';
+
+class ReviewPage extends StatefulWidget {
   final ShippingInfo? shipping;
   final PaymentInfo? payment;
+  final UserModel? user;
   final Map<String, dynamic> artwork;
 
   const ReviewPage({
@@ -16,9 +23,36 @@ class ReviewPage extends StatelessWidget {
     required this.shipping,
     required this.artwork,
     required this.payment,
+    required this.user,
   }) : super(key: key);
 
+  @override
+  _ReviewPageState createState() => _ReviewPageState();
+}
+
+class _ReviewPageState extends State<ReviewPage> {
   Widget buildArtworkInfo() {
+    String photoPath = widget.artwork['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
     return Container(
       width: 365,
       decoration: BoxDecoration(
@@ -32,26 +66,27 @@ class ReviewPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.asset(artwork["image"][0], height: 100),
+            imageWidget,
             SizedBox(height: 10),
-            Text(artwork["artist"]),
+            Text(widget.artwork["artistName"]!),
             SizedBox(height: 10),
             Text(
-              artwork["title"] + ", " + artwork["year"].toString(),
+              widget.artwork["title"] +
+                  ", " +
+                  widget.artwork["year"].toString(),
               style: TextStyle(
                 color: Colors.grey,
                 fontStyle: FontStyle.italic,
               ),
             ),
             SizedBox(height: 10),
-            Text(
-              artwork["gallery"],
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(widget.artwork['galleryName'] ?? 'Unknown Gallery',
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + artwork["price"]),
+            Text(
+                "Price " + PriceFormatter.formatPrice(widget.artwork['price'])),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -64,7 +99,8 @@ class ReviewPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text(artwork["price"],
+                  child: Text(
+                      PriceFormatter.formatPrice(widget.artwork['price']),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -79,7 +115,10 @@ class ReviewPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                              widget.shipping!.shippingPrice.toString()) ??
+                          'No Shipping Fee',
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -94,7 +133,8 @@ class ReviewPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(
+                      PriceFormatter.formatPrice(taxAmount().toString()),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -109,7 +149,9 @@ class ReviewPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text("Waiting for final costs",
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                          calculateTotalAmount().toString()),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -181,6 +223,28 @@ class ReviewPage extends StatelessWidget {
     );
   }
 
+  double calculateTotalAmount() {
+    double artworkPrice = double.parse(widget.artwork["price"]);
+    double shippingCost = widget.shipping != null
+        ? (widget.shipping!.shippingPrice as double?) ?? 0.0
+        : 0.0;
+
+    double totalAmount = artworkPrice + shippingCost + taxAmount();
+
+    return totalAmount;
+  }
+
+  double taxAmount() {
+    double artworkPrice = double.parse(widget.artwork["price"]);
+    double shippingCost = widget.shipping != null
+        ? (widget.shipping!.shippingPrice as double?) ?? 0.0
+        : 0.0;
+
+    double tax = 0.11 * (artworkPrice + shippingCost);
+
+    return tax;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Review page UI
@@ -199,7 +263,7 @@ class ReviewPage extends StatelessWidget {
                 height: 10,
               ),
               // if (shipping != null &&
-              //     shipping!.shippingMethod == "Shipping") ...[
+              //     widget.shipping!.shippingMethod == "Shipping") ...[
               //   Container(
               //     padding: EdgeInsets.all(10),
               //     height: 220,
@@ -225,13 +289,13 @@ class ReviewPage extends StatelessWidget {
               //             )
               //           ],
               //         ),
-              //         Text('${shipping!.fullName}'),
-              //         Text('${shipping!.addressLine1}'),
-              //         Text('${shipping!.addressLine2}'),
+              //         Text('${widget.shipping!.fullName}'),
+              //         Text('${widget.shipping!.addressLine1}'),
+              //         Text('${widget.shipping!.addressLine2}'),
               //         Text(
-              //             '${shipping!.city}, ${shipping!.state} ${shipping!.postalCode}'),
-              //         Text('${shipping!.country}'),
-              //         Text('${shipping!.phoneNumber}'),
+              //             '${widget.shipping!.city}, ${widget.shipping!.state} ${widget.shipping!.postalCode}'),
+              //         Text('${widget.shipping!.country}'),
+              //         Text('${widget.shipping!.phoneNumber}'),
               //       ],
               //     ),
               //   ),
@@ -248,8 +312,8 @@ class ReviewPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (shipping != null &&
-                        shipping!.shippingMethod == "Shipping") ...[
+                    if (widget.shipping != null &&
+                        widget.shipping!.shippingMethod == "Shipping") ...[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -265,27 +329,27 @@ class ReviewPage extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        '${shipping!.fullName}',
+                        '${widget.shipping!.fullName}',
                         overflow: TextOverflow.clip,
                       ),
                       Text(
-                        '${shipping!.addressLine1}',
+                        '${widget.shipping!.addressLine1}',
                         overflow: TextOverflow.clip,
                       ),
                       Text(
-                        '${shipping!.addressLine2}',
+                        '${widget.shipping!.addressLine2}',
                         overflow: TextOverflow.clip,
                       ),
                       Text(
-                        '${shipping!.city}, ${shipping!.state} ${shipping!.postalCode}',
+                        '${widget.shipping!.city}, ${widget.shipping!.state} ${widget.shipping!.postalCode}',
                         overflow: TextOverflow.clip,
                       ),
                       Text(
-                        '${shipping!.country}',
+                        '${widget.shipping!.country}',
                         overflow: TextOverflow.clip,
                       ),
                       Text(
-                        '${shipping!.phoneNumber}',
+                        '${widget.shipping!.phoneNumber}',
                         overflow: TextOverflow.clip,
                       ),
                     ] else ...[
@@ -316,8 +380,8 @@ class ReviewPage extends StatelessWidget {
               SizedBox(
                 height: 5,
               ),
-              if (shipping != null &&
-                  shipping!.shippingMethod == "Shipping") ...[
+              if (widget.shipping != null &&
+                  widget.shipping!.shippingMethod == "Shipping") ...[
                 Container(
                   padding: EdgeInsets.all(15),
                   height: 100,
@@ -346,10 +410,10 @@ class ReviewPage extends StatelessWidget {
                         ],
                       ),
                       // if (shipping != null &&
-                      //     shipping!.shippingMethod == "Shipping") ...[
+                      //     widget.shipping!.shippingMethod == "Shipping") ...[
 
                       Text(
-                          '${shipping!.shippingOption} delivery (USD${shipping!.shippingPrice})'),
+                          '${widget.shipping!.shippingOption} delivery (${PriceFormatter.formatPrice(widget.shipping!.shippingPrice.toString()) ?? 'No Shipping Fee'})'),
 
                       // ],
                     ],
@@ -387,8 +451,8 @@ class ReviewPage extends StatelessWidget {
                       ],
                     ),
                     // if (shipping != null &&
-                    //     shipping!.shippingMethod == "Shipping") ...[
-                    Text('${payment?.paymentMethod}'),
+                    //     widget.shipping!.shippingMethod == "Shipping") ...[
+                    Text('${widget.payment?.paymentMethod}'),
                     // ],
                   ],
                 ),
@@ -399,14 +463,54 @@ class ReviewPage extends StatelessWidget {
               buildProtectionInfo(),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  String paymentDescription = '';
+
+                  if (widget.payment?.bankAcc != null) {
+                    // If bankAcc is not null, display the bankAcc
+                    paymentDescription = widget.payment?.bankAcc ?? '';
+                  } else if (widget.payment?.numberCard != null) {
+                    // If bankAcc is null but numberCard is not null, display the numberCard
+                    paymentDescription = widget.payment?.numberCard ?? '';
+                  } else {
+                    // If both bankAcc and numberCard are null, display "Cash on Wire Transfer"
+                    paymentDescription = 'Cash on Wire Transfer';
+                  }
+
+                  String fullPaymentMethodDescription =
+                      'paymentMethod: ${widget.payment?.paymentMethod}, paymentDescription: $paymentDescription';
+
+                  final TransactionModel transaction = TransactionModel(
+                    artworkId: widget.artwork['id'] != null
+                        ? int.tryParse(widget.artwork['id'].toString()) ?? 0
+                        : 0, // Set the artwork ID accordingly
+                    paymentMethod: fullPaymentMethodDescription,
+                    amount: PriceFormatter.formatPrice(calculateTotalAmount()
+                        .toString()), // Implement this method to calculate the total amount
+                    status: 'Pending',
+                    shippingMethod: widget.shipping?.shippingMethod,
+                    name: widget.shipping?.fullName,
+                    email: widget.shipping?.email,
+                    phoneNumber: widget.shipping?.phoneNumber,
+                    description: 'Artwork Purchase',
+                    address: widget.shipping != null
+                        ? '${widget.shipping!.fullName}, ${widget.shipping!.phoneNumber}, ${widget.shipping!.addressLine1}, ${widget.shipping!.city}, ${widget.shipping!.state} ${widget.shipping!.postalCode}, ${widget.shipping!.country}'
+                        : 'Pick up at Gallery', // Set the address based on shipping or pick up
+                    createdAt: DateTime.now().toString(),
+                  );
+                  // Insert the transaction into the database
+                  final DBHelper dbHelper = DBHelper();
+                  // final int transactionId =
+                  await dbHelper.insertTransaction(transaction);
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => PaymentSuccessPage(
-                              shipping: shipping,
-                              artwork: artwork,
-                              payment: payment,
+                          user:widget.user,
+                              shipping: widget.shipping,
+                              artwork: widget.artwork,
+                              payment: widget.payment,
                             )),
                   );
                 },
@@ -447,7 +551,7 @@ class ReviewPage extends StatelessWidget {
 
               // if (shipping != null) ...[
               //   Text('Shipping Info:'),
-              //   Text('Full Name: ${shipping!.fullName}'),
+              //   Text('Full Name: ${widget.shipping!.fullName}'),
               // Text('k ${payment?.paymentMethod ?? 'N/A'}'),
               // Text('kj ${shipping?.shippingMethod ?? 'N/A'}'),
               // Text('kj ${shipping?.shippingOption ?? 'N/A'}'),

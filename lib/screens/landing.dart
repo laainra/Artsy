@@ -85,6 +85,7 @@ class LandingPage extends StatelessWidget {
                             minimumSize: Size(160, 45),
                             // Add a margin of 20 to all edges
                           ),
+                          
                           child: Text(
                             'Sign Up',
                             style: TextStyle(

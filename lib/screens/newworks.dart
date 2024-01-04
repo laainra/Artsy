@@ -1,9 +1,13 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/dbhelper.dart'; // Import your DBHelper class
 import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
 
 class NewWorksPage extends StatefulWidget {
+  final UserModel? user;
+  const NewWorksPage({Key? key, required this.user})
+      : super(key: key);
   @override
   NewWorksPageState createState() => NewWorksPageState();
 }
@@ -16,7 +20,7 @@ class NewWorksPageState extends State<NewWorksPage> {
       'year': 2021, // Change from "2021" to 2021
       'gallery': 'Tumo Gallery',
       'image': 'assets/images/art1.png',
-      'harga': '€3,300',
+      'harga': '3,300',
     },
     {
       'title': 'Sally',
@@ -101,7 +105,7 @@ void fetchArtworkData() async {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailArtworkPage(artworkDetails: artItems[index]),
+            builder: (context) => DetailArtworkPage(user:widget.user,artworkDetails: artItems[index]),
           ),
         );
       },

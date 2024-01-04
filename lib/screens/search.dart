@@ -39,13 +39,25 @@ class _SearchPageState extends State<SearchPage> {
       'birthYear': '1632',
       'image': 'assets/images/artist5.png',
     },
+    {
+      'name': ' Velacio Cuy',
+      'nationality': 'Dutch',
+      'birthYear': '1912',
+      'image': 'assets/images/artist6.png',
+    },
+    {
+      'name': ' Mozhgan',
+      'nationality': 'Dutch',
+      'birthYear': '1804',
+      'image': 'assets/images/artist7.png',
+    },
   ];
+
+  List<Map<String, dynamic>> filteredArtists = [];
 
   @override
   void initState() {
     super.initState();
-
-    // Add a listener to the FocusNode to update the state
     _searchFocusNode.addListener(() {
       setState(() {});
     });
@@ -86,7 +98,13 @@ class _SearchPageState extends State<SearchPage> {
                   prefixIcon: Icon(Icons.search, color: Colors.grey),
                 ),
                 onChanged: (value) {
-                  // Handle search input change
+                  setState(() {
+                    filteredArtists = trendingArtists
+                        .where((artist) => artist['name']
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                        .toList();
+                  });
                 },
               ),
               _searchFocusNode.hasFocus
@@ -94,7 +112,8 @@ class _SearchPageState extends State<SearchPage> {
                       onTap: () {
                         setState(() {
                           _searchController.clear();
-                          _searchFocusNode.unfocus(); // Remove focus
+                          _searchFocusNode.unfocus();
+                          filteredArtists.clear();
                         });
                       },
                       child: Padding(
@@ -105,7 +124,7 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       ),
                     )
-                  : SizedBox(), // Empty container if not focused
+                  : SizedBox(),
             ],
           ),
         ),
@@ -157,8 +176,13 @@ class _SearchPageState extends State<SearchPage> {
                   width: 400,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: trendingArtists.length,
+                    itemCount: filteredArtists.isNotEmpty
+                        ? filteredArtists.length
+                        : trendingArtists.length,
                     itemBuilder: (context, index) {
+                      final artist = filteredArtists.isNotEmpty
+                          ? filteredArtists[index]
+                          : trendingArtists[index];
                       return Container(
                         width: 170,
                         margin: EdgeInsets.only(right: 16),
@@ -168,8 +192,7 @@ class _SearchPageState extends State<SearchPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Image.asset(
-                                trendingArtists[index][
-                                    'image'], // Use Image.asset for asset images
+                                artist['image'],
                                 height: 100,
                                 width: 150,
                                 fit: BoxFit.cover,
@@ -179,15 +202,15 @@ class _SearchPageState extends State<SearchPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(trendingArtists[index]['name'],
+                                    Text(artist['name'],
                                         style: TextStyle(
                                           fontSize: 13,
                                           overflow: TextOverflow.ellipsis,
                                         )),
                                     Text(
-                                        trendingArtists[index]['nationality'] +
+                                        artist['nationality'] +
                                             ", b." +
-                                            trendingArtists[index]['birthYear'],
+                                            artist['birthYear'],
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: Colors.grey,
@@ -251,8 +274,8 @@ class ArtsyCollectionCard extends StatelessWidget {
               children: [
                 Container(
                   margin: EdgeInsets.all(10),
-                  child: Image.network(
-                    "https://placekitten.com/180/120", // Replace with actual image URL
+                  child: Image.asset(
+                    "assets/images/art2.png",
                     height: 150,
                     width: 150,
                     fit: BoxFit.cover,
@@ -261,16 +284,16 @@ class ArtsyCollectionCard extends StatelessWidget {
                 SizedBox(height: 10),
                 Column(
                   children: [
-                    Image.network(
-                      "https://placekitten.com/180/120", // Replace with actual image URL
+                    Image.asset(
+                      "assets/images/art4.png",
                       height: 70,
                       width: 70,
 
                       fit: BoxFit.cover,
                     ),
                     SizedBox(height: 10),
-                    Image.network(
-                      "https://placekitten.com/180/120", // Replace with actual image URL
+                    Image.asset(
+                     "assets/images/art3.png",
                       height: 70,
                       width: 70,
 

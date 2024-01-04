@@ -3,6 +3,8 @@ import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
+import 'package:artsy_prj/components/priceFormat.dart';
+import 'dart:io';
 
 class ShippingForm extends StatefulWidget {
   final Map<String, dynamic> artwork;
@@ -30,15 +32,15 @@ class _ShippingFormState extends State<ShippingForm> {
   bool isShippingSelected = true;
   bool isPrioritySelected = false;
   bool isStandartSelected = false;
-  String selectedCountry = '';
+  String? selectedCountry = '';
   bool saveAddressForLaterUse = false;
   String selectedDeliveryMethod = '';
   String selectedShippingOption = '';
-  int selectedShippingPrice = 0;
+  double selectedShippingPrice = 0.0;
 
   bool isFormFilled() {
     return fullNameController.text.isNotEmpty &&
-        selectedCountry.isNotEmpty &&
+
         addressLine1Controller.text.isNotEmpty &&
         addressLine2Controller.text.isNotEmpty &&
         cityController.text.isNotEmpty &&
@@ -86,7 +88,7 @@ class _ShippingFormState extends State<ShippingForm> {
   }
 // ...
 
-  Widget buildShippingOption(String title, String description, int price,
+  Widget buildShippingOption(String title, String description, double price,
       {bool underline = false, bool isActive = false}) {
     return InkWell(
       onTap: () {
@@ -147,10 +149,10 @@ class _ShippingFormState extends State<ShippingForm> {
                   ),
                 ),
                 Container(
-                  width: 250,
+                  width: 120,
                   height: 30,
                   child: Text(
-                    "USD" + price.toString(),
+                    PriceFormatter.formatPrice(price.toString()),
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -162,9 +164,28 @@ class _ShippingFormState extends State<ShippingForm> {
     );
   }
 
-// ...
-
   Widget buildArtworkInfo() {
+    String photoPath = widget.artwork['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
     return Container(
       width: 365,
       decoration: BoxDecoration(
@@ -178,9 +199,9 @@ class _ShippingFormState extends State<ShippingForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.asset(widget.artwork["image"][0], height: 100),
+            imageWidget,
             SizedBox(height: 10),
-            Text(widget.artwork["artist"]),
+            Text(widget.artwork["artistName"]!),
             SizedBox(height: 10),
             Text(
               widget.artwork["title"] +
@@ -192,14 +213,13 @@ class _ShippingFormState extends State<ShippingForm> {
               ),
             ),
             SizedBox(height: 10),
-            Text(
-              widget.artwork["gallery"],
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(widget.artwork['galleryName'] ?? 'Unknown Gallery',
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + widget.artwork["price"]),
+            Text(
+                "Price " + PriceFormatter.formatPrice(widget.artwork['price'])),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -212,7 +232,8 @@ class _ShippingFormState extends State<ShippingForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text(widget.artwork["price"],
+                  child: Text(
+                      PriceFormatter.formatPrice(widget.artwork['price']),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -328,6 +349,68 @@ class _ShippingFormState extends State<ShippingForm> {
       ),
     );
   }
+Widget buildDropdown(
+  String label,
+  String? selectedValue,
+  bool isRequired,
+  double? width,
+  List<String> items,
+) {
+  String? selectedCountry = items.isNotEmpty ? items.first : null;
+
+  return Container(
+    width: width,
+    padding: const EdgeInsets.only(bottom: 10.0),
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              label,
+              style: TextStyle(fontSize: 13),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            if (isRequired)
+              Text(
+                "Required",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+          ],
+        ),
+        SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: selectedCountry,
+          hint: Text('Select'),
+          decoration: InputDecoration(
+            hintText: "Select",
+            hintStyle: TextStyle(color: Colors.grey),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (val) {
+            // Ensure that the selected value is within the list of items
+            if (items.contains(val)) {
+              setState(() {
+                selectedCountry = val;
+              });
+            }
+          },
+          items: items.map((item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item),
+            );
+          }).toList(),
+        ),
+      ],
+    ),
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -451,14 +534,10 @@ class _ShippingFormState extends State<ShippingForm> {
                             alignment: Alignment.topRight,
                             child: Column(
                               children: [
-                                Text(
-                                  "What is this?",
-                                  style: TextStyle(fontSize: 13),
-                                  textAlign: TextAlign.right,
-                                ),
-                                buildTextField("Email", emailController),
+                                buildTextField("Full Name", fullNameController, TextInputType.name),
+                                buildTextField("Email", emailController, TextInputType.emailAddress),
                                 buildTextField(
-                                    "Phone Number", phoneNumberController)
+                                    "Phone Number", phoneNumberController,TextInputType.phone)
                               ],
                             )),
                       ),
@@ -486,6 +565,9 @@ class _ShippingFormState extends State<ShippingForm> {
                           style: TextStyle(fontSize: 13, color: Colors.grey),
                           textAlign: TextAlign.left,
                           overflow: TextOverflow.clip,
+                        ),
+                        SizedBox(
+                          height: 10,
                         ),
                         buildShippingOption(
                           "Standard",
@@ -525,6 +607,7 @@ class _ShippingFormState extends State<ShippingForm> {
               onPressed: () {
                 ShippingInfo shippingInfo = ShippingInfo(
                   fullName: fullNameController.text,
+                  email: emailController.text,
                   country: selectedCountry,
                   addressLine1: addressLine1Controller.text,
                   addressLine2: addressLine2Controller.text,
@@ -642,34 +725,42 @@ class _ShippingFormState extends State<ShippingForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        buildTextField("Full Name", fullNameController),
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            primary: Colors.black,
-            side: BorderSide(color: Colors.grey),
-            fixedSize: Size(400, 50), // Atur lebar dan tinggi sesuai kebutuhan
-          ),
-          onPressed: () {
-            _showCountryPickerModal(context);
-          },
-          child: Text(
-            'Select Country',
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                color: Colors.black54),
-            textAlign: TextAlign.left,
-          ),
+        buildTextField("Full Name", fullNameController, TextInputType.name),
+        buildDropdown(
+          "Country",
+          selectedCountry,
+          false,
+          370,
+          countryList
         ),
+        // OutlinedButton(
+        //   style: OutlinedButton.styleFrom(
+        //     primary: Colors.black,
+        //     side: BorderSide(color: Colors.grey),
+        //     fixedSize: Size(400, 50), // Atur lebar dan tinggi sesuai kebutuhan
+        //   ),
+        //   onPressed: () {
+        //     _showCountryPickerModal(context);
+        //   },
+        //   child: Text(
+        //     'Select Country',
+        //     style: TextStyle(
+        //         fontSize: 18,
+        //         fontWeight: FontWeight.w400,
+        //         color: Colors.black54),
+        //     textAlign: TextAlign.left,
+        //   ),
+        // ),
         SizedBox(
           height: 10,
         ),
-        buildTextField("Address Line 1", addressLine1Controller),
-        buildTextField("Address Line 2 (Optional)", addressLine2Controller),
-        buildTextField("City", cityController),
-        buildTextField("State/Province/Region", stateController),
-        buildTextField("Postal Code", postalController),
-        buildTextField("Phone Number", phoneNumberController),
+        buildTextField("Address Line 1", addressLine1Controller,TextInputType.text),
+        buildTextField("Address Line 2 (Optional)", addressLine2Controller,TextInputType.text),
+        buildTextField("City", cityController,TextInputType.text),
+        buildTextField("State/Province/Region", stateController,TextInputType.text),
+        buildTextField("Postal Code", postalController, TextInputType.number),
+        buildTextField("Email", emailController, TextInputType.emailAddress),
+        buildTextField("Phone Number", phoneNumberController, TextInputType.phone),
         Row(
           children: [
             Checkbox(
@@ -687,10 +778,11 @@ class _ShippingFormState extends State<ShippingForm> {
     );
   }
 
-  Widget buildTextField(String label, TextEditingController controller) {
+  Widget buildTextField(String label, TextEditingController controller,TextInputType keyboard) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: TextField(
+        keyboardType: keyboard,
         controller: controller,
         decoration: InputDecoration(
           labelText: label,

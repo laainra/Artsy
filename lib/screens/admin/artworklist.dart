@@ -6,6 +6,7 @@ import 'package:artsy_prj/dbhelper.dart';
 import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:artsy_prj/model/artistmodel.dart';
 import 'package:artsy_prj/model/gallerymodel.dart';
+import 'package:artsy_prj/components/priceFormat.dart';
 
 class ArtworkListPage extends StatefulWidget {
   const ArtworkListPage({Key? key}) : super(key: key);

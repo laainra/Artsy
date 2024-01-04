@@ -1,9 +1,13 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/dbhelper.dart'; // Import your DBHelper class
 import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
 
 class ExplorePage extends StatefulWidget {
+    final UserModel? user;
+  const ExplorePage({Key? key, required this.user})
+      : super(key: key);
   @override
   ExplorePageState createState() => ExplorePageState();
 }
@@ -16,7 +20,7 @@ class ExplorePageState extends State<ExplorePage> {
       'year': 2021,
       'gallery': 'Tumo Gallery',
       'image': 'assets/images/art1.png',
-      'harga': '€3,300',
+      'price': '€3,300',
     },
     {
       'title': 'Sally',
@@ -24,7 +28,7 @@ class ExplorePageState extends State<ExplorePage> {
       'year': 2023,
       'gallery': 'Half Gallery',
       'image': 'assets/images/art2.png',
-      'harga': 'USD16,000',
+      'price': 'USD16,000',
     },
     {
       'title': 'Strength?',
@@ -32,7 +36,7 @@ class ExplorePageState extends State<ExplorePage> {
       'year': 2023,
       'gallery': 'WORTHLESSSTUDIOS Benefit Auction',
       'image': 'assets/images/art3.png',
-      'harga': 'USD3,500',
+      'price': 'USD3,500',
     },
     {
       'title': 'Dancing Among the Flowers',
@@ -40,7 +44,7 @@ class ExplorePageState extends State<ExplorePage> {
       'year': 2023,
       'gallery': 'Carousel Fine Art',
       'image': 'assets/images/art4.png',
-      'harga': 'USD12,500',
+      'price': 'USD12,500',
     },
     {
       'title': 'The Moment That Things Start to Change',
@@ -48,7 +52,7 @@ class ExplorePageState extends State<ExplorePage> {
       'year': 2023,
       'gallery': 'The Artchi Gallery',
       'image': 'assets/images/art5.png',
-      'harga': '£1,200',
+      'price': '£1,200',
     },
   ];
 
@@ -116,6 +120,7 @@ class ExplorePageState extends State<ExplorePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailArtworkPage(
+                            user: widget.user,
                             artworkDetails: artItems[index],
                           ),
                         ),
@@ -162,7 +167,7 @@ class ExplorePageState extends State<ExplorePage> {
                                 ),
                               ),
                               Text(
-                                artItems[index]['harga'],
+                                artItems[index]['price'],
                                 style: TextStyle(fontSize: 12),
                               ),
                             ],

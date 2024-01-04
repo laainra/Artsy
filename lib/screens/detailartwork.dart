@@ -1,10 +1,14 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/screens/payment.dart';
 import 'dart:io';
+import 'package:artsy_prj/components/priceFormat.dart';
 
 class DetailArtworkPage extends StatefulWidget {
+  final UserModel? user;
   final Map<String, dynamic> artworkDetails;
-  const DetailArtworkPage({Key? key, required this.artworkDetails})
+  const DetailArtworkPage(
+      {Key? key, required this.artworkDetails, required this.user})
       : super(key: key);
 
   @override
@@ -34,6 +38,100 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
 
   @override
   Widget build(BuildContext context) {
+    String photoPath = widget.artworkDetails['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 250,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 250,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
+
+// Default image paths
+const String defaultArtistImage = 'assets/images/artist1.png';
+const String defaultGalleryImage = 'assets/images/art5.png';
+
+// Load artist image
+final avaImage = widget.artworkDetails["artistPhoto"] ?? '';
+Widget artistAva;
+
+if (avaImage.isNotEmpty) {
+  final imageFile = File(avaImage);
+
+  if (imageFile.existsSync()) {
+    artistAva = Image.file(
+      imageFile,
+      width: 50,
+      height: 50,
+      fit: BoxFit.cover,
+    );
+  } else {
+    print('File does not exist: $avaImage');
+    // Display default artist image or show an error icon
+    artistAva = Image.asset(
+      defaultArtistImage,
+      width: 50,
+      height: 50,
+      fit: BoxFit.cover,
+    );
+  }
+} else {
+  // Display default artist image or show an error icon
+  artistAva = Image.asset(
+    defaultArtistImage,
+    width: 50,
+    height: 50,
+    fit: BoxFit.cover,
+  );
+}
+
+// Load gallery image
+final galImage = widget.artworkDetails["galleryPhoto"] ?? '';
+Widget galleryAva;
+
+if (galImage.isNotEmpty) {
+  final imageFile = File(galImage);
+
+  if (imageFile.existsSync()) {
+    galleryAva = Image.file(
+      imageFile,
+      width: 50,
+      height: 50,
+      fit: BoxFit.cover,
+    );
+  } else {
+    print('File does not exist: $galImage');
+    // Display default gallery image or show an error icon
+    galleryAva = Image.asset(
+      defaultGalleryImage,
+      width: 50,
+      height: 50,
+      fit: BoxFit.cover,
+    );
+  }
+} else {
+  // Display default gallery image or show an error icon
+  galleryAva = Image.asset(
+    defaultGalleryImage,
+    width: 50,
+    height: 50,
+    fit: BoxFit.cover,
+  );
+}
+
     return Scaffold(
       appBar: AppBar(
         leading: TextButton(
@@ -102,24 +200,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                                   currentPage = index.toDouble();
                                 });
                               },
-                              children: [
-                                widget.artworkDetails['photos'] != null
-                                    ? widget.artworkDetails['photos']
-                                            .startsWith('assets/images')
-                                        ? Image.asset(
-                                            widget.artworkDetails['photos'],
-                                            height: 120,
-                                          )
-                                        : Image.file(
-                                            File(widget
-                                                .artworkDetails['photos']),
-                                            height: 120,
-                                          )
-                                    : Image.asset(
-                                        'assets/images/art1.png',
-                                        height: 120,
-                                      )
-                              ],
+                              children: [imageWidget],
                             ),
                           ),
                           // Page indicators
@@ -136,7 +217,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.favorite, color: Colors.black),
+                          Icon(Icons.favorite_border, color: Colors.black),
                           Text(" Save", style: TextStyle(color: Colors.black)),
                           SizedBox(width: 20),
                           Icon(Icons.share_outlined, color: Colors.black),
@@ -151,7 +232,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  widget.artworkDetails['artistName'] +
+                  widget.artworkDetails['artistName']! +
                       ", " +
                       widget.artworkDetails['year'].toString(),
                   style: TextStyle(fontSize: 16, color: Colors.black),
@@ -174,7 +255,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                       Container(
                           width: 150,
                           child: Text(
-                            widget.artworkDetails['title'],
+                            widget.artworkDetails['medium'] ?? 'Unknown',
                             overflow: TextOverflow.clip,
                           ))
                     ],
@@ -196,7 +277,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                       Container(
                           width: 150,
                           child: Text(
-                            widget.artworkDetails['title'],
+                            widget.artworkDetails['materials'] ?? 'Unknown',
                             overflow: TextOverflow.clip,
                           ))
                     ],
@@ -216,11 +297,20 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                         ),
                       ),
                       Container(
-                          width: 150,
-                          child: Text(
-                            widget.artworkDetails['title'],
-                            overflow: TextOverflow.clip,
-                          ))
+                        width: 150,
+                        child: Text(
+                          (widget.artworkDetails['height'].toString() ??
+                                  'Unknown') +
+                              " x " +
+                              (widget.artworkDetails['width'].toString() ??
+                                  'Unknown') +
+                              " x " +
+                              (widget.artworkDetails['depth'].toString() ??
+                                  'Unknown') +
+                              " cm",
+                          overflow: TextOverflow.clip,
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -240,7 +330,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                       Container(
                           width: 150,
                           child: Text(
-                            widget.artworkDetails['title'],
+                            widget.artworkDetails['rarity'] ?? 'Unknown',
                             overflow: TextOverflow.clip,
                           ))
                     ],
@@ -262,7 +352,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                       Container(
                           width: 150,
                           child: Text(
-                            widget.artworkDetails['title'],
+                            widget.artworkDetails['certificate'] ?? 'Unknown',
                             overflow: TextOverflow.clip,
                           ))
                     ],
@@ -279,7 +369,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                             color: const Color.fromARGB(255, 123, 121, 121)),
                       ),
                       Text(
-                        widget.artworkDetails['title'],
+                        widget.artworkDetails['frame'] ?? 'Unknown',
                         overflow: TextOverflow.clip,
                       )
                     ],
@@ -291,12 +381,29 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Signature",
+                        "Condition",
                         style: TextStyle(
                             color: const Color.fromARGB(255, 123, 121, 121)),
                       ),
                       Text(
-                        widget.artworkDetails['title'],
+                        widget.artworkDetails['condition'] ?? 'Unknown',
+                        overflow: TextOverflow.clip,
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Location",
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 123, 121, 121)),
+                      ),
+                      Text(
+                        widget.artworkDetails['location'] ?? 'Unknown',
                         overflow: TextOverflow.clip,
                       )
                     ],
@@ -314,10 +421,12 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
 
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage:
-                          NetworkImage('https://placekitten.com/200/200'),
+                    ClipOval(
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        child: artistAva,
+                      ),
                     ),
                     SizedBox(width: 10),
                     Container(
@@ -331,9 +440,12 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            "Description about the artist...",
+                            widget.artworkDetails['artistNationality'] ?? 'Unknown' +
+                                " b." +
+                                widget.artworkDetails['artistBirthYear']
+                                    .toString() ?? 'Unknown',
                             style: TextStyle(fontSize: 13),
-                            overflow: TextOverflow.ellipsis,
+                            overflow: TextOverflow.clip,
                           ),
                         ],
                       ),
@@ -385,10 +497,12 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Row(children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage:
-                            NetworkImage('https://placekitten.com/200/200'),
+                      ClipOval(
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          child: galleryAva,
+                        ),
                       ),
                       SizedBox(
                         width: 15,
@@ -398,7 +512,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                           Text(widget.artworkDetails['galleryName'] ??
                               'Unknown Gallery'),
                           Text(
-                            "Gallery Location",
+                           widget.artworkDetails['galleryLocation']?? 'Unknown',
                             style: TextStyle(color: Colors.grey, fontSize: 12),
                           )
                         ],
@@ -469,7 +583,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 25),
                   child: Text(
-                    widget.artworkDetails['price'],
+                    PriceFormatter.formatPrice(widget.artworkDetails['price']),
                     textAlign: TextAlign.left,
                     style: TextStyle(color: Colors.black, fontSize: 28),
                   ),
@@ -521,6 +635,7 @@ class _DetailArtworkPageState extends State<DetailArtworkPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => PurchasePage(
+                                user: widget.user,
                                 // Pass relevant details to the payment page if needed
                                 artworkDetails: widget.artworkDetails,
                               ),

@@ -1,24 +1,73 @@
+import 'package:artsy_prj/components/home/home.dart';
+import 'package:artsy_prj/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
 import 'dart:math';
+import 'package:artsy_prj/components/priceFormat.dart';
+import 'package:artsy_prj/screens/formlogin.dart';
+import 'dart:io';
 
 class PaymentSuccessPage extends StatelessWidget {
+  final UserModel? user;
   final ShippingInfo? shipping;
   final PaymentInfo? payment;
   final Map<String, dynamic> artwork;
 
   const PaymentSuccessPage({
     Key? key,
+    required this.user,
     required this.shipping,
     required this.artwork,
     required this.payment,
   }) : super(key: key);
 
+  double calculateTotalAmount() {
+    double artworkPrice = double.parse(artwork["price"]);
+    double shippingCost =
+        shipping != null ? (shipping!.shippingPrice as double?) ?? 0.0 : 0.0;
+
+    double totalAmount = artworkPrice + shippingCost + taxAmount();
+
+    return totalAmount;
+  }
+
+  double taxAmount() {
+    double artworkPrice = double.parse(artwork["price"]);
+    double shippingCost =
+        shipping != null ? (shipping!.shippingPrice as double?) ?? 0.0 : 0.0;
+
+    double tax = 0.11 * (artworkPrice + shippingCost);
+
+    return tax;
+  }
+
   Widget buildArtworkInfo() {
+    String photoPath = artwork['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
     return Container(
       width: 365,
       decoration: BoxDecoration(
@@ -32,9 +81,9 @@ class PaymentSuccessPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.asset(artwork["image"][0], height: 100),
+            imageWidget,
             SizedBox(height: 10),
-            Text(artwork["artist"]),
+            Text(artwork["artistName"]!),
             SizedBox(height: 10),
             Text(
               artwork["title"] + ", " + artwork["year"].toString(),
@@ -44,14 +93,12 @@ class PaymentSuccessPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            Text(
-              artwork["gallery"],
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(artwork['galleryName'] ?? 'Unknown Gallery',
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + artwork["price"]),
+            Text("Price " + PriceFormatter.formatPrice(artwork['price'])),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -64,7 +111,7 @@ class PaymentSuccessPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text(artwork["price"],
+                  child: Text(PriceFormatter.formatPrice(artwork['price']),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -79,7 +126,10 @@ class PaymentSuccessPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                              shipping!.shippingPrice.toString()) ??
+                          'No Shipping Fee',
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -94,7 +144,8 @@ class PaymentSuccessPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(
+                      PriceFormatter.formatPrice(taxAmount().toString()),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -109,7 +160,9 @@ class PaymentSuccessPage extends StatelessWidget {
                   )),
               Container(
                   width: 200,
-                  child: Text("Waiting for final costs",
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                          calculateTotalAmount().toString()),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -140,44 +193,45 @@ class PaymentSuccessPage extends StatelessWidget {
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(color: Color.fromARGB(186, 215, 215, 215)),
       width: 365,
-      height: 200,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Icon(Icons.check_circle),
-          SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Congratulations! This artwork will be addes to your Collection once the gallery confirms the order.",
-                style:
-                    TextStyle(overflow: TextOverflow.clip, color: Colors.blue),
-              ),
-              RichText(
-                overflow: TextOverflow.clip,
-                text: TextSpan(
-                  style: TextStyle(
-                    overflow: TextOverflow.clip,
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                  children: [
-                    TextSpan(
-                        text:
-                            "View and manage all artworks in your Collection through your "),
-                    TextSpan(
-                      text: "profile. ",
-                      style: TextStyle(
-                        overflow: TextOverflow.clip,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ],
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Congratulations! This artwork will be addressed to your Collection once the gallery confirms the order.",
+                  style: TextStyle(color: Colors.red),
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 10,
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15,
+                    ),
+                    children: [
+                      TextSpan(
+                        text:
+                            "View and manage all artworks in your Collection through your ",
+                      ),
+                      TextSpan(
+                        text: "profile. ",
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -271,26 +325,29 @@ class PaymentSuccessPage extends StatelessWidget {
                 decoration:
                     BoxDecoration(color: Color.fromARGB(186, 215, 215, 215)),
                 width: 365,
-                height: 70,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     // Icon(Icons.check_circle),
                     SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "You will receive a confirmation email by ${getDayAfterToday()}",
-                          style: TextStyle(
-                              color: Colors.grey, overflow: TextOverflow.clip),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "You will receive a confirmation email by ${getDayAfterToday()}",
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
+
               SizedBox(height: 10),
               buildArtworkInfo(),
               SizedBox(height: 10),
@@ -410,6 +467,31 @@ class PaymentSuccessPage extends StatelessWidget {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 15,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => HomePage(
+                              user: user,
+                            )),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  minimumSize: Size(350, 45),
+                ),
+                child: Text(
+                  "Back To Home",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ),
               Container(
                 alignment: Alignment.center,
                 child: RichText(
@@ -421,7 +503,7 @@ class PaymentSuccessPage extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: "Need Help? ",
-                        style: TextStyle(fontSize: 13),
+                        style: TextStyle(fontSize: 15),
                       ),
                       TextSpan(
                         text: 'Visit our help center',
@@ -434,7 +516,7 @@ class PaymentSuccessPage extends StatelessWidget {
                       TextSpan(
                         text: 'ask a question',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 15,
                           decoration: TextDecoration.underline,
                         ),
                       ),

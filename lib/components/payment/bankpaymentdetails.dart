@@ -1,20 +1,26 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/model/shippingmodel.dart';
 import 'package:artsy_prj/components/payment/shippingform.dart';
 import 'package:artsy_prj/components/payment/reviewpage.dart';
 import 'package:artsy_prj/components/payment/paymentpage.dart';
 import 'package:artsy_prj/model/paymentmodel.dart';
+import 'dart:io';
+import 'package:artsy_prj/components/priceFormat.dart';
 
 class BankForm extends StatefulWidget {
   final Map<String, dynamic> artwork;
   final ShippingInfo? shipping;
   final Function(PaymentInfo) onSavePayment;
   final TabController tabController;
+  final UserModel? user;
+
   const BankForm({
     Key? key,
     required this.artwork,
     required this.shipping,
     required this.onSavePayment,
+    required this.user,
     required this.tabController,
   }) : super(key: key);
   @override
@@ -23,11 +29,17 @@ class BankForm extends StatefulWidget {
 
 class _BankFormState extends State<BankForm> {
   final fullNameController = TextEditingController();
-
   final emailController = TextEditingController();
   final bankController = TextEditingController();
   bool saveBankForLaterUse = false;
   // String selectedPaymentMethod = "Bank Transfer";
+  @override
+  void initState() {
+    super.initState();
+    fullNameController.text = widget.shipping?.fullName ?? '';
+    emailController.text = widget.shipping?.email ?? '';
+    // Set initial values for TextFields
+  }
 
   bool isFormFilled() {
     return fullNameController.text.isNotEmpty &&
@@ -35,7 +47,30 @@ class _BankFormState extends State<BankForm> {
         bankController.text.isNotEmpty; // Add this line
   }
 
+  
+
   Widget buildArtworkInfo() {
+    String photoPath = widget.artwork['photos'];
+
+    Widget imageWidget;
+
+    if (photoPath.startsWith('assets/images')) {
+      imageWidget = Image.asset(
+        photoPath,
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else if (photoPath.startsWith(
+        '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+      imageWidget = Image.file(
+        File(photoPath),
+        height: 120,
+        // You can add more properties here if needed
+      );
+    } else {
+      // Handle other cases or provide a default image
+      imageWidget = Placeholder();
+    }
     return Container(
       width: 365,
       decoration: BoxDecoration(
@@ -49,9 +84,9 @@ class _BankFormState extends State<BankForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.asset(widget.artwork["image"][0], height: 100),
+            imageWidget,
             SizedBox(height: 10),
-            Text(widget.artwork["artist"]),
+            Text(widget.artwork["artistName"]!),
             SizedBox(height: 10),
             Text(
               widget.artwork["title"] +
@@ -63,14 +98,13 @@ class _BankFormState extends State<BankForm> {
               ),
             ),
             SizedBox(height: 10),
-            Text(
-              widget.artwork["gallery"],
-              style: TextStyle(color: Colors.grey),
-            ),
+            Text(widget.artwork['galleryName'] ?? 'Unknown Gallery',
+                style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
             Text("Location", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 10),
-            Text("Price " + widget.artwork["price"]),
+            Text(
+                "Price " + PriceFormatter.formatPrice(widget.artwork['price'])),
             SizedBox(height: 10),
             Divider(),
             SizedBox(height: 10),
@@ -83,7 +117,8 @@ class _BankFormState extends State<BankForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text(widget.artwork["price"],
+                  child: Text(
+                      PriceFormatter.formatPrice(widget.artwork['price']),
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -98,7 +133,10 @@ class _BankFormState extends State<BankForm> {
                   )),
               Container(
                   width: 200,
-                  child: Text("Calculated in next steps",
+                  child: Text(
+                      PriceFormatter.formatPrice(
+                              widget.shipping!.shippingPrice.toString()) ??
+                          'No Shipping Fee',
                       style: TextStyle(color: Colors.grey)))
             ]),
             SizedBox(
@@ -307,9 +345,13 @@ class _BankFormState extends State<BankForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        buildTextField("Email", emailController, "Your Email"),
-        buildTextField("Full Name", fullNameController, "Your Full Name"),
-        buildTextField("Bank Account", bankController, "Your Bank Account"),
+        buildTextField("Email", emailController, emailController.text.isNotEmpty
+                    ? widget.shipping?.email ?? "Enter Email"
+                    : "Enter Email"),
+        buildTextField("Full Name", fullNameController, fullNameController.text.isNotEmpty
+                    ? widget.shipping?.fullName ?? "Enter Email"
+                    : "Enter Email"),
+        buildTextField("Bank Account", bankController, "Enter Bank Account (Bank Name)"),
         Row(
           children: [
             Checkbox(
@@ -328,18 +370,37 @@ class _BankFormState extends State<BankForm> {
   }
 
   Widget buildTextField(
-      String label, TextEditingController controller, String hint) {
+      String label, TextEditingController controller,String hint, ) {
+    bool isHintFilled = controller.text.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(),
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 13),
+          ),
+          SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            style: TextStyle(color: isHintFilled ? Colors.black : Colors.grey),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: controller.text.isNotEmpty ? Colors.black : Colors.grey,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(),
+            ),
+            onTap: () {
+              setState(() {
+                isHintFilled = controller.text.isNotEmpty;
+              });
+            },
+          ),
+        ],
       ),
     );
   }

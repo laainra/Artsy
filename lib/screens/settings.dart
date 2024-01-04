@@ -108,7 +108,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),
@@ -128,7 +128,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),
@@ -148,7 +148,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),
@@ -168,7 +168,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),
@@ -188,7 +188,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),
@@ -208,7 +208,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),
@@ -228,7 +228,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),
@@ -248,7 +248,7 @@ class _SettingsState extends State<Settings> {
                     style: TextStyle(fontSize: 17),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/account-settings');
+                    // Navigator.pushNamed(context, '/account-settings');
                   },
                 ),
                 Text(">"),

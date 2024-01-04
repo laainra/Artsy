@@ -1,5 +1,6 @@
 import 'package:artsy_prj/dbhelper.dart';
 import 'package:artsy_prj/model/usermodel.dart';
+import 'package:artsy_prj/screens/home.dart';
 import 'package:artsy_prj/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -162,14 +163,17 @@ class _EditProfileState extends State<EditProfile> {
                       color: Colors.grey,
                       borderRadius: BorderRadius.circular(180),
                     ),
-                    child: profileImage == null
+                    child: profileImage != null
                         ? Center(
-                            child: Image.file(
-                            fit: BoxFit.cover,
-                            File(widget.user.profileImage!),
-                            width: 88,
-                            height: 88,
-                          ))
+                            child: ClipOval(
+                              child: Image.file(
+                                width: 88,
+                                height: 88,
+                                fit: BoxFit.cover,
+                                File(widget.user.profileImage ?? ""),
+                              ),
+                            ),
+                          )
                         : Center(child: FlutterLogo()),
                   ),
                   SizedBox(
@@ -347,7 +351,7 @@ class _EditProfileState extends State<EditProfile> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProfilePage(
+                      builder: (context) => HomePage(
                         user: updatedUser, // Pass the updated user to Settings
                       ),
                     ),
@@ -369,4 +373,5 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ));
   }
+
 }

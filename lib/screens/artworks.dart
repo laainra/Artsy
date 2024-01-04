@@ -1,3 +1,4 @@
+import 'package:artsy_prj/model/usermodel.dart';
 import 'package:artsy_prj/screens/detailartwork.dart';
 import 'package:flutter/material.dart';
 import 'package:artsy_prj/dbhelper.dart';
@@ -5,10 +6,12 @@ import 'package:artsy_prj/model/artworkmodel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:artsy_prj/components/priceFormat.dart';
 
 class ArtworksPage extends StatefulWidget {
+  final UserModel? user;
   final List<Map<String, dynamic>> artworks;
-  const ArtworksPage({Key? key, required this.artworks}) : super(key: key);
+  const ArtworksPage({Key? key, required this.artworks, required this.user}) : super(key: key);
 
   @override
   State<ArtworksPage> createState() => _ArtworksPageState();
@@ -37,6 +40,7 @@ class _ArtworksPageState extends State<ArtworksPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -72,12 +76,34 @@ class _ArtworksPageState extends State<ArtworksPage> {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
+                              String photoPath = widget.artworks[index]['photos'];
+
+              Widget imageWidget;
+
+              if (photoPath.startsWith('assets/images')) {
+                imageWidget = Image.asset(
+                  photoPath,
+                  height: 250,
+                  // You can add more properties here if needed
+                );
+              } else if (photoPath.startsWith(
+                  '/storage/emulated/0/Android/data/com.example.artsy_prj/files/')) {
+                imageWidget = Image.file(
+                  File(photoPath),
+                  height: 250,
+                  // You can add more properties here if needed
+                );
+              } else {
+                // Handle other cases or provide a default image
+                imageWidget = Placeholder();
+              }
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => DetailArtworkPage(
+                          user: widget.user,
                           artworkDetails: widget.artworks[index],
                         ),
                       ),
@@ -97,21 +123,7 @@ class _ArtworksPageState extends State<ArtworksPage> {
                       children: [
                         Expanded(
                           child: Center(
-                              child: widget.artworks[index]['photos'] != null
-                                  ? widget.artworks[index]['photos']
-                                          .startsWith('assets/images')
-                                      ? Image.asset(
-                                          widget.artworks[index]['photos'],
-                                          height: 120,
-                                        )
-                                      : Image.file(
-                                          File(widget.artworks[index]['photos']),
-                                          height: 120,
-                                        )
-                                  : Image.asset(
-                                      'assets/images/art1.png',
-                                      height: 120,
-                                    )),
+                              child: imageWidget),
                         ),
                         SizedBox(height: 8),
                         Text(
@@ -134,7 +146,7 @@ class _ArtworksPageState extends State<ArtworksPage> {
                           ),
                         ),
                         Text(
-                          widget.artworks[index]['price'],
+                          PriceFormatter.formatPrice(widget.artworks[index]['price']),
                           style: TextStyle(fontSize: 12),
                         ),
                       ],
